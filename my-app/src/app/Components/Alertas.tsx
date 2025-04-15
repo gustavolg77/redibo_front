@@ -3,10 +3,8 @@
 import { useState, useRef } from "react";
 import { FiBell, FiUser, FiX, FiAlertTriangle } from "react-icons/fi";
 
-// Importar la tipografía Inter
 import { Inter } from "next/font/google";
 
-// Configurar la fuente Inter
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -25,7 +23,7 @@ interface Alert {
   viewed: boolean;
 }
 
-export default function Home() {
+export default function Alertas() {
   const initialAlerts: Alert[] = [
     { 
       id: 1, 
@@ -147,7 +145,7 @@ export default function Home() {
   };
 
   const handleViewMore = (alert: Alert) => {
-    // Marcar la alerta como vista
+    
     setAlerts(prevAlerts => 
       prevAlerts.map(a => 
         a.id === alert.id ? { ...a, viewed: true } : a
@@ -251,7 +249,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Modal - Eliminado el fondo negro */}
       {showModal && selectedAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
           <div className="bg-[#E4D5C1] rounded-md shadow-lg w-[95%] max-w-md pointer-events-auto">
@@ -311,4 +308,3 @@ export default function Home() {
     </main>
   );
 }
-
