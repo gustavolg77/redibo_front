@@ -253,7 +253,9 @@ export default function Home() {
       </header>
 
 
-      <HostView cars={CARS_DATA}  />
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <HostView cars={CARS_DATA} />
+      </main>
 
       {showAlerts && (
         <div 
