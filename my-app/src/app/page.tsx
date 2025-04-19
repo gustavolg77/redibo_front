@@ -211,7 +211,11 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <div className="flex flex-col items-center">
                   <div className="w-full sm:w-40 h-24 sm:h-32 bg-gray-200 mb-2 rounded overflow-hidden">
-                    <img src="/api/placeholder/200/160" alt="Vehículo" className="w-full h-full object-cover" />
+                  <img
+              src={selectedAlert.imageUrl}
+                   alt="Vehículo"
+                 className="w-full h-full object-cover"
+                  />
                   </div>
                   <p className="text-center font-semibold text-xs sm:text-sm">{selectedAlert.model}</p>
                 </div>
