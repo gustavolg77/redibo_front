@@ -5,6 +5,8 @@ export interface Car {
   id: number;
   brand: string;
   model: string;
+  color:String;
+  owner: String;
   year: number;
   image: string;
   status: string;
