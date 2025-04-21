@@ -7,6 +7,7 @@ interface Alert {
   title: string;
   message: string;
   date: string;
+  imageUrl:string;
 }
 
 const Alertas = () => {
