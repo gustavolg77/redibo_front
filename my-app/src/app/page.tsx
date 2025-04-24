@@ -22,6 +22,7 @@ interface Alert {
 }
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
   const [showAlerts, setShowAlerts] = useState(false);
@@ -95,17 +96,35 @@ export default function Home() {
           <button 
             data-id="notification-bell"
             onClick={toggleAlerts} 
-            className="relative p-1.5 sm:p-2 border-2 border-orange-400 rounded-full"
+            className="relative p-1.5 sm:p-2 border-2 border-orange-400 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-md hover:ring-2 hover:ring-orange-300 cursor-pointer"
           >
             <FiBell className="text-orange-500 text-lg sm:text-xl" />
             {unviewedAlertsCount > 0 && (
               <span className="absolute top-0 right-0 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-red-500 rounded-full" />
             )}
           </button>
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-400 flex items-center justify-center">
+           {/* User Icon + Submenú */}
+        <div className="relative">
+          <div 
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-400 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-orange-300 transition"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
             <FiUser className="text-white text-lg sm:text-xl" />
           </div>
+
+          {/* Submenú */}
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+              <ul className="py-1 text-sm text-gray-700">
+                <li>
+                  <button className="w-full text-left px-4 py-2 hover:bg-orange-100 transition cursor-pointer">Mis Autos</button>
+                </li>
+                {/* Puedes agregar más opciones aquí */}
+              </ul>
+            </div>
+          )}
         </div>
+      </div>
       </header>
 
       {/* Main content */}

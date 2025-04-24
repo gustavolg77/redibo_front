@@ -16,7 +16,7 @@ export default function CarCard({ car }: CarCardProps) {
   return (
     <>
       <div 
-        className="bg-white rounded-lg shadow-md overflow-hidden relative"
+        className="bg-white rounded-xl shadow-md overflow-hidden relative transform transition-all duration-300 ease-in-out hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl hover:ring-2 hover:ring-[#FCA311]/30"
         style={{
           fontFamily: 'Inter, sans-serif',
           border: '1px solid #E4D5C1'
@@ -47,7 +47,7 @@ export default function CarCard({ car }: CarCardProps) {
           <div className="flex justify-center">
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="px-3 py-1.5 text-sm font-semibold rounded-md hover:opacity-90 transition"
+              className="px-3 py-1.5 text-sm font-semibold rounded-md transition-transform transform hover:scale-105 hover:shadow-md cursor-pointer"
               style={{ backgroundColor: '#FCA311', color: '#FFFFFF' }}
             >
               Ver más
