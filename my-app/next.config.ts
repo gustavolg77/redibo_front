@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
@@ -9,9 +9,32 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      
+      {
+        protocol: 'https',
+        hostname: 'www.tourinnovacion.cl',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'anteriorportal.erbol.com.bo',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.abw.by',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.webmotors.com.br',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
-}
+};
 
-module.exports = nextConfig;
+export default nextConfig;

@@ -10,8 +10,8 @@ interface CarCardProps {
 
 export default function CarCard({ car }: CarCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const getCarImage = () => 
-    car.image || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500&auto=format&fit=crop';
+  const defaultImage = 'https://images.unsplash.com/photo-1596165494776-c27e37f666fe?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  const [imgSrc, setImgSrc] = useState(car.image || defaultImage);
 
   return (
     <>
@@ -22,28 +22,26 @@ export default function CarCard({ car }: CarCardProps) {
           border: '1px solid #E4D5C1'
         }}
       >
-        <div className="relative h-36 bg-gray-200"> {/* Altura reducida */}
+        <div className="relative h-36 bg-gray-200">
           <Image
-            src={getCarImage()}
+            src={imgSrc}
             alt={`${car.brand} ${car.model}`}
             fill
             className="object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500&auto=format&fit=crop';
-            }}
+            onError={() => setImgSrc(defaultImage)}
           />
         </div>
-        
-        <div className="p-3"> {/* Padding reducido */}
+
+        <div className="p-3">
           <h3 className="text-center font-semibold mb-2 text-base" style={{ color: '#11295B' }}>
             {car.brand} {car.model}
           </h3>
-          
+
           <div className="mb-3 space-y-1">
             <p className="text-sm font-medium text-gray-900">Alquilado: {car.totalRentals} veces</p>
             <p className="text-sm font-medium text-gray-900">Uso total: {car.totalUsageDays} días</p>
           </div>
-          
+
           <div className="flex justify-center">
             <button 
               onClick={() => setIsModalOpen(true)}
@@ -55,7 +53,7 @@ export default function CarCard({ car }: CarCardProps) {
           </div>
         </div>
       </div>
-      
+
       {isModalOpen && (
         <CarModal 
           car={car}
