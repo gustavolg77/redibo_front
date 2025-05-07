@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DetailsInquilino from './DetailsInquilino';
 
 type Rental = {
   startDate: string;
@@ -22,12 +23,34 @@ type ModalData = {
   rental: Rental;
 };
 
+interface Inquilino {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  image: string;
+  totalRentals: number;
+  rentals: {
+    id: number;
+    carId: number;
+    startDate: string;
+    endDate: string;
+    status: 'active' | 'completed';
+    owner: string;
+    carBrand: string;
+    carModel: string;
+  }[];
+}
+
 const MonthView = ({ month, year }: { month: number; year: number }) => {
   const [selectedWeek, setSelectedWeek] = useState<DayData[] | null>(null);
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [modalData, setModalData] = useState<ModalData | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [inquilinos, setInquilinos] = useState<Inquilino[]>([]);
+  const [selectedInquilino, setSelectedInquilino] = useState<Inquilino | null>(null);
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -46,6 +69,19 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
       }
     };
     fetchCars();
+  }, []);
+
+  useEffect(() => {
+    const fetchInquilinos = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/inquilinos');
+        const data = await response.json();
+        setInquilinos(data);
+      } catch (error) {
+        console.error("Error cargando inquilinos:", error);
+      }
+    };
+    fetchInquilinos();
   }, []);
 
   const getDaysInMonth = (month: number, year: number): Date[] => {
@@ -124,7 +160,7 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
   const weeks = buildWeeks(days);
 
   return (
-    <div className={`mt-4 p-4 bg-white rounded shadow relative ${modalData ? 'backdrop-blur-sm' : ''}`}>
+    <div className={`mt-4 p-4 bg-white rounded shadow relative ${modalData || showDetails ? 'backdrop-blur-sm' : ''}`}>
       <p className="text-lg font-medium mb-2">
         Vista del mes: {new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' })}
       </p>
@@ -183,7 +219,7 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
               </div>
             ))}
           </div>
-
+          
           <div className="mt-4">
             <h3 className="text-xl font-semibold">Mis Automóviles</h3>
             <ul className="mt-2 space-y-2">
@@ -213,7 +249,8 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
         </div>
       )}
 
-      {modalData && (
+      {/* Modal de información del alquiler */}
+      {modalData && !showDetails && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-500/40 z-50 backdrop-blur-sm">
           <div className="bg-white rounded-lg p-6 shadow-lg w-80">
             <h2 className="text-lg font-bold mb-2">Información del alquiler</h2>
@@ -221,6 +258,7 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
             <p><strong>Inquilino:</strong> {modalData.rental.tenant}</p>
             <p><strong>Desde:</strong> {new Date(modalData.rental.startDate).toLocaleDateString()}</p>
             <p><strong>Hasta:</strong> {new Date(modalData.rental.endDate).toLocaleDateString()}</p>
+
             <div className="flex justify-between mt-4">
               <button
                 className="bg-blue-500 text-white px-3 py-2 rounded text-sm"
@@ -230,9 +268,35 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
               </button>
               <button
                 className="bg-[#FCA311] text-white px-3 py-2 rounded text-sm hover:bg-[#11295B]"
-                onClick={() => alert(`Ver detalles del inquilino: ${modalData.rental.tenant}`)}
+                onClick={() => {
+                  const tenant = inquilinos.find(i => i.name === modalData.rental.tenant);
+                  setSelectedInquilino(tenant || null);
+                  setShowDetails(true);
+                  setModalData(null);
+                }}
               >
                 Ver detalles del inquilino
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de detalles del inquilino */}
+      {showDetails && selectedInquilino && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-500/40 z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-lg p-8 shadow-lg w-full h-full max-w-[90vw] max-h-[90vh] overflow-auto">
+            <h2 className="text-[2.074rem] font-semibold text-[#FCA311] mb-4">Detalles del Inquilino</h2>
+            <DetailsInquilino
+              tenantId={selectedInquilino.id}
+              inquilinosData={inquilinos}
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded text-sm"
+                onClick={() => setShowDetails(false)}
+              >
+                Cerrar detalles
               </button>
             </div>
           </div>
