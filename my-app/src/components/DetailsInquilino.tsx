@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { FiAlertTriangle, FiMail, FiPhone, FiClock } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface Rental {
   id: number;
@@ -51,7 +52,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
           throw new Error('No se pudo obtener los datos del inquilino');
         }
         const data = await response.json();
-        
+
         const completeData = {
           ...data,
           phone: data.phone || data.telefono || 'No disponible',
@@ -59,7 +60,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
           image: data.image || data.imagen || '/default-profile.png',
           rentals: data.rentals || []
         };
-        
+
         setInquilino(completeData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -72,9 +73,9 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
   }, [tenantId, inquilinosData]);
 
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'long', 
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       timeZone: 'UTC'
     };
@@ -111,14 +112,16 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
     );
   }
 
+  const whatsappUrl = `https://wa.me/${inquilino.phone.replace(/[^\d]/g, '')}`;
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8 w-full">
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex flex-col md:flex-row items-center gap-6 mb-4 w-full">
           <div className="flex-shrink-0">
             <div className="w-32 h-32 rounded-full bg-[#E4D5C1] overflow-hidden">
-              <img 
-                src={inquilino.image} 
+              <img
+                src={inquilino.image}
                 alt={`Foto de ${inquilino.name}`}
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -127,13 +130,11 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
               />
             </div>
           </div>
-          
-          {/* Información principal */}
+
           <div className="text-left flex-grow">
             <h3 className="text-[1.728rem] font-semibold text-[#000000]">{inquilino.name}</h3>
-            
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Teléfono */}
+
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex items-center">
                 <div className="bg-[#FCA311] p-2 rounded-full mr-3">
                   <FiPhone className="h-4 w-4 text-white" />
@@ -151,8 +152,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
                   </p>
                 </div>
               </div>
-              
-              {/* Correo */}
+
               <div className="flex items-center">
                 <div className="bg-[#FCA311] p-2 rounded-full mr-3">
                   <FiMail className="h-4 w-4 text-white" />
@@ -170,8 +170,25 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
                   </p>
                 </div>
               </div>
-              
-              {/* Total de alquileres */}
+
+              <div className="flex items-center">
+                <div className="bg-[#25D366] p-2 rounded-full mr-3 cursor-pointer hover:bg-[#1ebe5b] transition" onClick={() => window.open(whatsappUrl, '_blank')}>
+                  <FaWhatsapp className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-[0.833rem] text-gray-500">WhatsApp</p>
+                  <p className="text-[1rem] text-gray-800 font-medium">
+                    {inquilino.phone ? (
+                      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#25D366] transition-colors">
+                        Enviar mensaje
+                      </a>
+                    ) : (
+                      <span className="text-gray-400">No disponible</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+
               <div className="flex items-center">
                 <div className="bg-[#FCA311] p-2 rounded-full mr-3">
                   <FiClock className="h-4 w-4 text-white" />
@@ -185,13 +202,11 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
           </div>
         </div>
       </div>
-      
-      {/* Historial de alquileres */}
+
       <div className="mt-8">
         <h3 className="text-[1.44rem] font-medium text-[#FCA311] mb-4">Historial de alquileres</h3>
-        
+
         <div className="overflow-x-auto">
-          
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-[#FCA311]">
               <tr>
@@ -217,8 +232,8 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        rental.status === 'active' 
-                          ? 'bg-[#FCA311]/20 text-[#FCA311]' 
+                        rental.status === 'active'
+                          ? 'bg-[#FCA311]/20 text-[#FCA311]'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
                         {rental.status === 'active' ? 'Activo' : 'Finalizado'}
