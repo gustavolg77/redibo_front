@@ -1,12 +1,17 @@
-// types.ts
-export type UserType = 'guest' | 'host' | 'admin';
+export interface Rental {
+  rentalId: number;
+  tenant: string;
+  startDate: string; // Formato 'YYYY-MM-DD'
+  endDate: string;   // Formato 'YYYY-MM-DD'
+  price: number;
+}
 
 export interface Car {
   id: number;
   brand: string;
   model: string;
-  color:String;
-  owner: String;
+  color: string;
+  owner: string;
   year: number;
   image: string;
   status: string;
@@ -15,4 +20,6 @@ export interface Car {
   pricePerDay: number;
   description?: string;
   features?: string[];
+  topRank:number;
+  rentals?: Rental[]; // Agregado para almacenar las rentas del automóvil
 }

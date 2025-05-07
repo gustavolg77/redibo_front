@@ -5,6 +5,7 @@ import { FiBell, FiUser, FiX, FiAlertTriangle } from "react-icons/fi";
 import { Car } from '@/types';
 import HostView from '@/components/HostView';
 import { Inter } from "next/font/google";
+import CalendarButton from "@/components/CalendarButton"
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -19,6 +20,7 @@ interface Alert {
   exceededTime: string;
   returnInfo: string;
   viewed: boolean;
+  imageUrl:string;
 }
 
 export default function Home() {
@@ -126,7 +128,7 @@ export default function Home() {
         </div>
       </div>
       </header>
-
+      <CalendarButton />
       {/* Main content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <HostView cars={cars} />
