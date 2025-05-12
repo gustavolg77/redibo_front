@@ -121,11 +121,12 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
           <div className="flex-shrink-0">
             <div className="w-32 h-32 rounded-full bg-[#E4D5C1] overflow-hidden">
               <img
-                src={inquilino.image}
+                src={inquilino.image?.trim() ? inquilino.image : "/default-profile.png"}
                 alt={`Foto de ${inquilino.name}`}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/default-profile.png';
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/default-profile.png";
                 }}
               />
             </div>

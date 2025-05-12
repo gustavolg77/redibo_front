@@ -84,6 +84,22 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
     fetchInquilinos();
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+     if (event.key === 'Escape') {
+       setShowDetails(false);
+     }
+   };
+
+   if (showDetails) {
+     document.addEventListener('keydown', handleKeyDown);
+   }
+
+   return () => {
+     document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showDetails]);
+
   const getDaysInMonth = (month: number, year: number): Date[] => {
     const date = new Date(year, month, 1);
     const days: Date[] = [];
@@ -284,23 +300,26 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
 
       {/* Modal de detalles del inquilino */}
       {showDetails && selectedInquilino && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-500/40 z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-lg p-8 shadow-lg w-full h-full max-w-[90vw] max-h-[90vh] overflow-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black opacity-80 z-40"></div>
+          <div className="relative z-50 w-full max-w-5xl mx-auto">
+          <div className="relative bg-white rounded-lg p-6 shadow-lg max-h-[90vh] overflow-y-auto">  
             <h2 className="text-[2.074rem] font-semibold text-[#FCA311] mb-4">Detalles del Inquilino</h2>
             <DetailsInquilino
               tenantId={selectedInquilino.id}
               inquilinosData={inquilinos}
-            />
-            <div className="flex justify-end mt-4">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded text-sm"
-                onClick={() => setShowDetails(false)}
-              >
-                Cerrar detalles
-              </button>
-            </div>
+            /> 
+            
+            <button
+              onClick={() => setShowDetails(false)}
+              className="absolute top-1 right-5 text-gray-500 hover:text-gray-700 text-3xl font-bold focus:outline-none cursor-pointer"
+              aria-label="Cerrar"
+            >
+              &times;
+            </button>
           </div>
         </div>
+      </div>
       )}
     </div>
   );
