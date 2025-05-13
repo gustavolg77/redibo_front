@@ -187,12 +187,11 @@ const getCircleColor = (car: Car, day: Date): string => {
 const days = getDaysInMonth(month, year);
 const weeks = buildWeeks(days);
 return (
- <div
+<div
   className={`mt-2 p-2 bg-white rounded shadow relative 
   ${modalData || showDetails ? 'backdrop-blur-sm' : ''}
   max-w-full sm:max-w-3xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto transition-all duration-300`}
 >
-
   <p className="text-lg md:text-xl font-medium mb-2">
     Vista del mes: {new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' })}
   </p>
@@ -213,8 +212,7 @@ return (
           <React.Fragment key={index}>
             <div className="text-center py-1 sm:py-2">
               <div
-                className="
-                  bg-[#FCA311] text-white rounded 
+                className="bg-[#FCA311] text-white rounded 
                   px-[6px] sm:px-[8px] md:px-[10px] lg:px-[14px] xl:px-[16px]
                   py-[2px] sm:py-[4px] md:py-[6px]
                   text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg
@@ -240,95 +238,103 @@ return (
       </div>
     </div>
   ) : (
-<div className="mt-4 p-2 bg-white rounded shadow">
-  <div className="flex justify-between items-center mb-2">
-     <div className="bg-[#FCA311] text-white rounded-md px-2 py-1 font-semibold
-                    hover:bg-[#11295B] transition duration-300 cursor-pointer
-                    text-lg font-medium">
-      {(() => {
-        const firstRealDay = selectedWeek.find(entry => entry.day !== null);
-        return firstRealDay ? `Semana ${firstRealDay.weekNumber}` : 'Sin datos';
-      })()}
-    </div>
-    <button
-      onClick={() => setSelectedWeek(null)}
-      className="p-1 bg-blue-500 text-white rounded text-sm md:text-base hover:bg-blue-600 transition cursor-pointer"
-    >
-      Volver a la vista del mes
-    </button>
-  </div>
+    <div className="mt-4 p-2 bg-white rounded shadow">
+      <div className="flex flex-wrap justify-between items-center gap-y-2">
+        {/* IZQUIERDA: Semana */}
+        <div className="bg-[#FCA311] text-white rounded-md px-2 py-1 font-semibold
+                        hover:bg-[#11295B] transition duration-300 cursor-pointer
+                        text-lg font-medium">
+          {(() => {
+            const firstRealDay = selectedWeek.find(entry => entry.day !== null);
+            return firstRealDay ? `Semana ${firstRealDay.weekNumber}` : 'Sin datos';
+          })()}
+        </div>
 
-{/* Tabla de días */}
-<div className="mt-4">
-  <div className="grid grid-cols-8 gap-2 text-sm sm:text-base">
-    <div></div>
-    {['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].map((day, index) => (
-      <div key={index} className="text-center font-semibold text-xs sm:text-sm">
-        {day}
-      </div>
-    ))}
-    {selectedWeek.map(({ day }, index) => (
-      <div key={index} className={`text-center py-2 ${index === 0 ? 'col-start-2' : ''}`}>
-        {day ? day.getDate() : ''}
-      </div>
-    ))}
-  </div>
-</div>
+        {/* CENTRO: Libre / Ocupado */}
+        <div className="flex justify-center items-center gap-4 w-full md:w-auto order-3 md:order-none">
+          <div className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-green-500"></span>
+            <span className="text-sm text-gray-700">Libre</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-red-500"></span>
+            <span className="text-sm text-gray-700">Ocupado</span>
+          </div>
+        </div>
 
-{/* Autos */}
+        {/* DERECHA: Volver */}
+        <button
+          onClick={() => setSelectedWeek(null)}
+          className="p-2 bg-blue-500 text-white rounded text-sm md:text-base hover:bg-blue-600 transition cursor-pointer hover:scale-105"
+        >
+          Volver a la vista del mes
+        </button>
+      </div>
+
+      {/* Tabla de días */}
+      <div className="mt-4">
+        <div className="grid grid-cols-8 gap-2 text-sm sm:text-base">
+          <div></div>
+          {['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].map((day, index) => (
+            <div key={index} className="text-center font-semibold text-xs sm:text-sm">
+              {day}
+            </div>
+          ))}
+          {selectedWeek.map(({ day }, index) => (
+            <div key={index} className={`text-center py-2 ${index === 0 ? 'col-start-2' : ''}`}>
+              {day ? day.getDate() : ''}
+            </div>
+          ))}
+        </div>
+      </div>
+
+   {/* Autos */}
 <div className="mt-6">
   <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold">
     Mis Automóviles
   </h3>
 
-<ul className="mt-1 space-y-1 max-h-[600px] overflow-y-auto pr-1">
-
-    {loading ? (
-      <p className="text-center">Cargando autos...</p>
-    ) : (
-      cars
-        .sort((a, b) => {
-          const brandComparison = a.brand.localeCompare(b.brand);
-          return brandComparison !== 0
-            ? brandComparison
-            : a.model.localeCompare(b.model);
-        })
-        .map((car, index) => (
-        <li
-  key={index}
-  className="grid grid-cols-8 gap-[4px] items-center text-xs sm:text-sm md:text-base"
->
-  {/* Marca/Modelo con truncado solo en pantallas chicas */}
-<div className="font-medium pl-1 sm:pl-2 text-left">
-  {/* En pantallas <lg se muestra en dos líneas, en lg+ se mantiene en una sola */}
-  <span className="block md:block lg:inline xl:inline 2xl:inline">
-    {car.brand}
-  </span>
-  {" "}
-  <span className="block md:block lg:inline xl:inline 2xl:inline">
-    {car.model}
-  </span>
-</div>
-
-  {/* 7 días con col-span-1 cada uno */}
-  {selectedWeek.map(({ day }, i) => (
-    <div key={i} className="text-center col-span-1">
-      {day && (
-        <div
-          className={`rounded-full mx-auto cursor-pointer
-                      w-6 h-6 sm:w-8 sm:h-8
-                      ${getCircleColor(car, day)}`}
-          onClick={() =>
-            isDayActive(car, day) && handleCircleClick(car, day)
-          }
-        />
+  {/* Contenedor con altura fija y scroll interno */}
+  <div className="mt-1 max-h-[300px] overflow-y-auto pr-2">
+    <ul className="space-y-2">
+      {loading ? (
+        <li className="text-center">Cargando autos...</li>
+      ) : (
+        cars
+          .sort((a, b) => {
+            const cmp = a.brand.localeCompare(b.brand)
+            return cmp !== 0 ? cmp : a.model.localeCompare(b.model)
+          })
+          .map((car, i) => (
+            <li
+              key={i}
+              className="grid grid-cols-8 gap-1 items-center text-xs sm:text-sm md:text-base"
+            >
+              {/* Marca/Modelo */}
+              <div className="col-span-1 font-medium pl-1 sm:pl-2 text-left">
+                {car.brand} {car.model}
+              </div>
+              {/* Círculos de cada día */}
+              {selectedWeek.map(({ day }, j) => (
+                <div key={j} className="col-span-1 flex justify-center">
+                  {day && (
+                    <button
+                      onClick={() =>
+                        isDayActive(car, day) && handleCircleClick(car, day)
+                      }
+                      className={`rounded-full transition-transform cursor-pointer
+                        w-6 h-6 sm:w-8 sm:h-8
+                        ${getCircleColor(car, day)}
+                        hover:scale-110`}
+                    />
+                  )}
+                </div>
+              ))}
+            </li>
+          ))
       )}
-    </div>
-  ))}
-</li>
-        ))
-    )}
-  </ul>
+    </ul>
+  </div>
 </div>
 </div>
       )}
@@ -345,13 +351,13 @@ return (
 
             <div className="flex justify-between mt-4">
               <button
-                className="bg-blue-500 text-white px-3 py-2 rounded text-sm"
+                className="bg-blue-500 text-white px-3 py-2 rounded text-sm cursor-pointer hover:scale-105"
                 onClick={() => setModalData(null)}
               >
                 Cerrar
               </button>
               <button
-                className="bg-[#FCA311] text-white px-3 py-2 rounded text-sm hover:bg-[#11295B]"
+                className="bg-[#FCA311] text-white px-3 py-2 rounded text-sm hover:bg-[#11295B] cursor-pointer hover:scale-105"
                 onClick={() => {
                   const tenant = inquilinos.find(i => i.name === modalData.rental.tenant);
                   setSelectedInquilino(tenant || null);
