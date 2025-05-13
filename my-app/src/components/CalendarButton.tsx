@@ -1,134 +1,160 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import MonthView from './MonthView';  // Asegúrate de importar el componente correctamente
+import MonthView from './MonthView'
 
 export default function CalendarButton() {
   const [showDashboard, setShowDashboard] = useState(false)
-  const [iconCentered, setIconCentered] = useState(false)
-
-  const dashboardRef = useRef<HTMLDivElement | null>(null)
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
-
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null)
   const [selectedYear] = useState<number>(new Date().getFullYear())
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const toggleDashboard = () => {
     setShowDashboard(!showDashboard)
-    setIconCentered(true)
   }
 
   const closeDashboard = () => {
     setShowDashboard(false)
-    setIconCentered(false)
   }
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dashboardRef.current &&
-        !dashboardRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        closeDashboard()
-      }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDashboard()
     }
-
-    document.addEventListener('mousedown', handleClickOutside)
+    if (showDashboard) {
+      document.addEventListener('keydown', onKey)
+    }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [showDashboard])
+
+  useEffect(() => {
+    const storedMonth = localStorage.getItem('selectedMonth')
+    const storedView = localStorage.getItem('currentView')
+    if (storedView === 'monthView' && storedMonth !== null) {
+      setSelectedMonth(parseInt(storedMonth))
     }
   }, [])
 
+  const handleMonthSelect = (month: number) => {
+    setSelectedMonth(month)
+    localStorage.setItem('selectedMonth', month.toString())
+    localStorage.setItem('currentView', 'monthView')
+  }
+
+  const resetMonthSelection = () => {
+    setSelectedMonth(null)
+    localStorage.setItem('currentView', 'selectMonth')
+  }
+
   return (
-    <div className="relative">
-      {/* Botón flotante del calendario */}
-      {!showDashboard && (
-        <button
-          onClick={toggleDashboard}
-          className="p-2 rounded-lg transition absolute top-[60px] right-4 z-50"
-          ref={buttonRef}
-          style={{
-            transition: 'transform 0.3s ease',
-            transform: iconCentered ? 'translate(-50%, -50%)' : 'none',
-          }}
-        >
-          <Image src="/calendar.png" alt="Calendario" width={45} height={45} />
-        </button>
-      )}
+    <div className="relative z-20">
+      {/* Botón flotante SIEMPRE visible */}
+     <button
+  onClick={toggleDashboard}
+  ref={buttonRef}
+  className="p-2 rounded-full transition-all duration-300 ease-in-out
+             absolute top-[60px] right-10 z-20 shadow-md hover:shadow-xl
+             hover:scale-110 hover:rotate-1 hover:bg-blue-100 cursor-pointer"
+>
+  <Image src="/calendar.png" alt="Calendario" width={50} height={50} />
+</button>
 
-      {/* Dashboard del calendario */}
       {showDashboard && (
-        <div
-          ref={dashboardRef}
-          className="absolute top-[60px] left-1/2 transform -translate-x-1/2 w-[80%] h-[80vh] bg-[#D9D9D9] text-black shadow-xl p-6 z-40 overflow-auto border-none rounded-lg transition-all duration-300 ease-in-out scale-100 backdrop-blur-lg bg-opacity-80"
-        >
-          {/* Botón de cierre */}
-          <button
+        <div className="fixed inset-0 z-[999]">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-70"
             onClick={closeDashboard}
-            className="absolute top-4 right-4 text-4xl text-black hover:text-gray-600 transition"
+          />
+
+          {/* Panel */}
+          <div
+            onClick={e => e.stopPropagation()}
+            className="absolute top-[60px] left-1/2 transform -translate-x-1/2
+             w-[90%] sm:w-[70%] lg:w-[50%] h-[80vh] bg-[#D9D9D9] text-black shadow-xl p-6
+             rounded-lg overflow-auto transition-all duration-300 z-[1000]"
           >
-            &times;
-          </button>
-
-          {/* Encabezado */}
-          <div className="flex items-center justify-center mb-4">
-            <h2 className="text-2xl font-bold mr-4">Cronograma</h2>
-            <button onClick={toggleDashboard} className="p-2 rounded-lg transition">
-              <Image src="/calendar.png" alt="Calendario" width={30} height={30} />
+            {/* Botón X */}
+            <button
+              onClick={closeDashboard}
+              className="absolute top-4 right-4 text-4xl text-black transition-all duration-200
+                         hover:text-red-600 hover:scale-140 cursor-pointer"
+            >
+              &times;
             </button>
-          </div>
 
-          <div className="flex items-center">
-  {/* Año seleccionado */}
-  <div className="mr-4">
-    <p className="text-sm text-gray-700 inline-block mr-2">Año seleccionado:</p>
-    <div className="inline-flex mt-1 px-3 py-1 bg-white text-[#11295B] font-semibold rounded-md shadow-sm border border-gray-300">
+            {/* Encabezado con icono decorativo */}
+            <div className="flex items-center justify-center mb-4">
+              <h2 className="text-2xl font-bold mr-2">Cronograma</h2>
+              <div className="p-1">
+                <Image src="/calendar.png" alt="Calendario" width={40} height={40} />
+              </div>
+            </div>
+
+{/* Año y Mes */}
+<div className="flex items-center mb-6">
+  <div className="mr-6">
+    <p className="text-sm text-gray-700 inline-block mr-2">Año:</p>
+    <div className="inline-flex px-3 py-1 bg-white text-[#11295B] font-semibold
+                    rounded-md shadow-sm border border-gray-300">
       {selectedYear}
     </div>
   </div>
-
-  {/* Mes seleccionado */}
   <div>
     <p className="text-sm text-gray-700 inline-block mr-2">Mes:</p>
-    <div className="inline-flex mt-1 px-3 py-1 bg-white text-[#11295B] font-semibold rounded-md shadow-sm border border-gray-300">
+    <div
+      className="inline-flex px-3 py-1 bg-white text-[#11295B] font-semibold
+                rounded-md shadow-sm border border-gray-300 cursor-pointer
+                hover:bg-blue-50 hover:border-blue-400 hover:shadow
+                transition-all duration-200"
+      onClick={resetMonthSelection}
+    >
       {selectedMonth !== null
-        ? new Date(selectedYear, selectedMonth).toLocaleString('es-ES', { month: 'long' })
+        ? (() => {
+            const mes = new Date(selectedYear, selectedMonth).toLocaleString('es-ES', { month: 'long' });
+            return mes.charAt(0).toUpperCase() + mes.slice(1).toLowerCase();
+          })()
         : 'No seleccionado'}
     </div>
   </div>
 </div>
 
-          {/* Botones de los meses */}
-          {selectedMonth === null ? (
-            <div className="grid grid-cols-4 gap-4 justify-items-center mt-6">
-              {Array.from({ length: 12 }, (_, i) => {
-                const isSelected = selectedMonth === i
-                return (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedMonth(i)}
-                    className={`w-20 h-20 rounded-full font-semibold uppercase transition-all duration-200 cursor-pointer bg-[#11295B] text-white shadow-xl border border-white/20 hover:scale-105 hover:shadow-2xl ${isSelected ? 'ring-4 ring-white ring-opacity-40' : ''}`}
-                  >
-                    {new Date(0, i).toLocaleString('es-ES', { month: 'short' })}
-                  </button>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="mt-4">
-              {/* Vista del mes seleccionado */}
-              <MonthView month={selectedMonth} year={selectedYear} />
+{/* Vista según estado */}
+{selectedMonth === null ? (
+  <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 justify-items-center">
+    {Array.from({ length: 12 }, (_, i) => {
+      const mes = new Date(0, i).toLocaleString('es-ES', { month: 'long' });
+      const mesFormateado = mes.charAt(0).toUpperCase() + mes.slice(1).toLowerCase();
 
-              {/* Botón para regresar a la vista de los meses */}
-              <button
-                onClick={() => setSelectedMonth(null)}
-                className="mt-4 p-2 bg-blue-500 text-white rounded"
-              >
-                Volver a los meses
-              </button>
-            </div>
-          )}
+      return (
+        <button
+          key={i}
+          onClick={() => handleMonthSelect(i)}
+          className={`w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-36 lg:h-36 xl:w-40 xl:h-40 
+                      rounded-full font-semibold
+                      transition-all duration-200 cursor-pointer bg-[#11295B]
+                      text-white shadow-xl border border-white/20
+                      hover:scale-105 hover:shadow-2xl flex justify-center items-center text-center
+                      text-xs sm:text-sm md:text-base`}
+        >
+          {mesFormateado}
+        </button>
+      );
+    })}
+  </div>
+) : (
+  <div>
+    <MonthView month={selectedMonth} year={selectedYear} />
+    <button
+      onClick={resetMonthSelection}
+      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+    >
+      Volver a los meses
+    </button>
+  </div>
+)}
+          </div>
         </div>
       )}
     </div>

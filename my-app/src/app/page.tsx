@@ -92,7 +92,8 @@ export default function Home() {
   return (
     <main className={`min-h-screen bg-white text-black relative ${inter.className}`}>
       {/* Header */}
-      <header className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-300">
+<header className="z-20 flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-300 bg-white sticky top-0">
+
         <h1 className="text-lg sm:text-xl font-bold text-orange-500">REDIBO</h1>
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button 
@@ -116,7 +117,7 @@ export default function Home() {
 
           {/* Submenú */}
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-[20]">
               <ul className="py-1 text-sm text-gray-700">
                 <li>
                   <button className="w-full text-left px-4 py-2 hover:bg-orange-100 transition cursor-pointer">Mis Autos</button>
@@ -138,7 +139,7 @@ export default function Home() {
       {showAlerts && (
         <div 
           ref={alertsContainerRef}
-          className={`absolute right-2 sm:right-6 top-16 sm:top-20 w-[95%] sm:w-[90%] max-w-[440px] bg-[#d9d9d9] rounded-md border border-orange-400 p-3 sm:p-4 shadow-lg z-40 transition-all duration-300 ${showAll ? 'h-[70vh] max-h-[560px]' : 'h-[60vh] max-h-[360px]'}`}
+          className={`z-[20] absolute right-2 sm:right-6 top-16 sm:top-20 w-[95%] sm:w-[90%] max-w-[440px] bg-[#d9d9d9] rounded-md border border-orange-400 p-3 sm:p-4 shadow-lg transition-all duration-300 ${showAll ? 'h-[70vh] max-h-[560px]' : 'h-[60vh] max-h-[360px]'}`}
         >
           <div className="flex items-center mb-2 space-x-2">
             <h2 className="text-xs sm:text-sm font-semibold">Alertas</h2>
@@ -208,7 +209,7 @@ export default function Home() {
 
       {/* Modal */}
       {showModal && selectedAlert && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="fixed inset-0 z-20 flex items-center justify-center pointer-events-none">
           <div className="bg-[#E4D5C1] rounded-md shadow-lg w-[95%] max-w-md pointer-events-auto">
             <div className="bg-[#FCA311] py-2 px-3 sm:px-4 flex items-center justify-between">
               <div className="w-6"></div> 
