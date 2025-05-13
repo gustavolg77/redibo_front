@@ -69,12 +69,14 @@ export default function CalendarButton() {
           />
 
           {/* Panel */}
-          <div
-            onClick={e => e.stopPropagation()}
-            className="absolute top-[60px] left-1/2 transform -translate-x-1/2
-             w-[90%] sm:w-[70%] lg:w-[50%] h-[80vh] bg-[#D9D9D9] text-black shadow-xl p-6
-             rounded-lg overflow-auto transition-all duration-300 z-[1000]"
-          >
+        <div
+  onClick={(e) => e.stopPropagation()}
+  className="
+    absolute top-[60px] left-1/2 transform -translate-x-1/2
+    w-[95%] sm:w-[85%] md:w-[80%] lg:w-[75%] xl:w-[60%] 2xl:w-[60%]
+    h-[80vh] bg-[#D9D9D9] text-black shadow-xl p-2 sm:p-10 md:p-12
+    rounded-lg overflow-auto transition-all duration-300 z-[1000]"
+>
             {/* Botón X */}
             <button
               onClick={closeDashboard}
