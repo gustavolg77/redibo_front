@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiAlertTriangle, FiMail, FiPhone, FiClock } from "react-icons/fi";
-import { FaWhatsapp } from "react-icons/fa";
+
+import { FiAlertTriangle, FiMail, FiPhone, FiClock, FiCheck  } from "react-icons/fi";
+import { FaWhatsapp, FaStar} from "react-icons/fa";
 
 interface Rental {
   id: number;
@@ -13,6 +14,7 @@ interface Rental {
   owner: string;
   carBrand: string;
   carModel: string;
+  rating?: number;
 }
 
 interface Inquilino {
@@ -34,6 +36,10 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
   const [inquilino, setInquilino] = useState<Inquilino | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [ratingRentalId, setRatingRentalId] = useState<number | null>(null);
+  const [currentRating, setCurrentRating] = useState(0);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
 
   useEffect(() => {
     const fetchInquilino = async () => {
@@ -81,6 +87,46 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
     };
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
+  const handleRateClick = (rentalId: number) => {
+    setRatingRentalId(rentalId === ratingRentalId ? null : rentalId);
+    setCurrentRating(0);
+  };
+
+  const handleStarClick = (rentalId: number, rating: number) => {
+    setCurrentRating(rating);
+  };
+
+  const handleConfirmRating = async (rentalId: number) => {
+    if (currentRating === 0) return;
+    
+    try {
+
+      if (inquilino) {
+        const updatedRentals = inquilino.rentals.map(rental => {
+          if (rental.id === rentalId) {
+            return { ...rental, rating: currentRating };
+          }
+          return rental;
+        });
+
+        setInquilino({
+          ...inquilino,
+          rentals: updatedRentals
+        });
+      }
+
+      setShowSuccessMessage(true);
+      setRatingRentalId(null);
+      
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 2000);
+      
+    } catch (err) {
+      setError("Error al guardar la calificación");
+    }
+  };
+
 
   if (loading) {
     return (
@@ -116,6 +162,18 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8 w-full">
+      
+      {showSuccessMessage && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-4 max-w-sm">
+            <div className="flex items-center space-x-3 text-green-600">
+              <FiCheck className="h-6 w-6" />
+              <p className="font-medium">Calificación exitosa</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex flex-col md:flex-row items-center gap-6 mb-4 w-full">
           <div className="flex-shrink-0">
@@ -125,8 +183,8 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
                 alt={`Foto de ${inquilino.name}`}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "/default-profile.png";
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/default-profile.png";
                 }}
               />
             </div>
@@ -241,7 +299,56 @@ const DetailsInquilino = ({ tenantId, inquilinosData}: DetailsInquilinoProps) =>
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                      {rental.owner}
+                    {rental.owner}
+
+                      <div className="flex items-center justify-between">  
+                        <span>{rental.owner}</span>
+                        
+                        {rental.status === 'completed' && rental.owner === 'Tu' && !rental.rating && ratingRentalId !== rental.id && (
+                          <button 
+                            onClick={() => handleRateClick(rental.id)}
+                            className="ml-4 bg-[#FCA311] text-white px-4 py-1 rounded text-xs font-medium hover:bg-[#e29100] transition-colors"
+                          >
+                            Calificar
+                          </button>
+                        )}
+                        
+                        {rental.rating && (
+                          <div className="flex items-center ml-2">
+                            {[...Array(5)].map((_, i) => (
+                              <FaStar 
+                                key={i} 
+                                className={`${i < (rental.rating || 0) ? "text-yellow-400" : "text-gray-300"}`}
+                              />
+                            ))}
+                          </div>
+                        )}
+                        
+                        {ratingRentalId === rental.id && (
+                          <div className="flex items-center ml-2 space-x-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <FaStar
+                                key={star}
+                                className={`cursor-pointer ${
+                                  currentRating >= star ? "text-yellow-400" : "text-gray-300"
+                                }`}
+                                onClick={() => handleStarClick(rental.id, star)}
+                              />
+                            ))}
+                            <button
+                              onClick={() => handleConfirmRating(rental.id)}
+                              disabled={currentRating === 0}
+                              className={`ml-2 rounded-full p-1 ${
+                                currentRating > 0 
+                                  ? "bg-green-500 hover:bg-green-600" 
+                                  : "bg-gray-300 cursor-not-allowed"
+                              } text-white transition-colors`}
+                            >
+                              <FiCheck className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
