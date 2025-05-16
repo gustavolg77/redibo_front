@@ -215,7 +215,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
       <h2 className="text-2xl font-bold text-[#FCA311]">Detalles del inquilino</h2>
       <button
         onClick={() => onClose && onClose()}
-        className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+        className="text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
         aria-label="Cerrar"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
