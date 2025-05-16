@@ -69,7 +69,14 @@ export default function Home() {
       if (alertsContainerRef.current) alertsContainerRef.current.scrollTop = 0;
     }, 10);
   };
+const [showDashboard, setShowDashboard] = useState(false);
 
+const toggleDashboard = () => {
+  setShowDashboard(prev => !prev);
+};
+const closeDashboard = () => {
+  setShowDashboard(false);
+};
   const handleDelete = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -98,7 +105,12 @@ export default function Home() {
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button 
             data-id="notification-bell"
-            onClick={toggleAlerts} 
+             onClick={() => {
+    toggleAlerts();
+    closeDashboard(); // Cierra el calendario si está abierto
+  }}
+                        
+ 
             className="relative p-1.5 sm:p-2 border-2 border-orange-400 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-md hover:ring-2 hover:ring-orange-300 cursor-pointer"
           >
             <FiBell className="text-orange-500 text-lg sm:text-xl" />

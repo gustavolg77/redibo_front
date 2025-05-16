@@ -239,94 +239,100 @@ return (
     </div>
   ) : (
     <div className="mt-4 p-2 bg-white rounded shadow">
-      <div className="flex flex-wrap justify-between items-center gap-y-2">
-        {/* IZQUIERDA: Semana */}
-        <div className="bg-[#FCA311] text-white rounded-md px-2 py-1 font-semibold
-                        hover:bg-[#11295B] transition duration-300 cursor-pointer
-                        text-lg font-medium">
-          {(() => {
-            const firstRealDay = selectedWeek.find(entry => entry.day !== null);
-            return firstRealDay ? `Semana ${firstRealDay.weekNumber}` : 'Sin datos';
-          })()}
-        </div>
+  <div className="flex flex-wrap justify-between items-center gap-y-2">
+    {/* IZQUIERDA: Semana */}
+    <div className="bg-[#FCA311] text-white rounded-md px-2 py-1 font-semibold
+                    hover:bg-[#11295B] transition duration-300 cursor-pointer
+                    text-lg font-medium">
+      {(() => {
+        const firstRealDay = selectedWeek.find(entry => entry.day !== null);
+        return firstRealDay ? `Semana ${firstRealDay.weekNumber}` : 'Sin datos';
+      })()}
+    </div>
 
-        {/* CENTRO: Libre / Ocupado */}
-        <div className="flex justify-center items-center gap-4 w-full md:w-auto order-3 md:order-none">
-          <div className="flex items-center gap-1">
-            <span className="w-4 h-4 rounded-full bg-green-500"></span>
-            <span className="text-sm text-gray-700">Libre</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-4 h-4 rounded-full bg-red-500"></span>
-            <span className="text-sm text-gray-700">Ocupado</span>
-          </div>
-        </div>
-
-        {/* DERECHA: Volver */}
-        <button
-          onClick={() => setSelectedWeek(null)}
-          className="p-2 bg-blue-500 text-white rounded text-sm md:text-base hover:bg-blue-600 transition cursor-pointer hover:scale-105"
-        >
-          Volver a la vista del mes
-        </button>
+    {/* CENTRO: Libre / Ocupado */}
+    <div className="flex justify-center items-center gap-4 w-full md:w-auto order-3 md:order-none">
+      <div className="flex items-center gap-1">
+        <span className="w-4 h-4 rounded-full bg-green-500"></span>
+        <span className="text-sm text-gray-700">Libre</span>
       </div>
-
-      {/* Tabla de días */}
-      <div className="mt-4">
-        <div className="grid grid-cols-8 gap-2 text-sm sm:text-base">
-          <div></div>
-          {['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].map((day, index) => (
-            <div key={index} className="text-center font-semibold text-xs sm:text-sm">
-              {day}
-            </div>
-          ))}
-          {selectedWeek.map(({ day }, index) => (
-            <div key={index} className={`text-center py-2 ${index === 0 ? 'col-start-2' : ''}`}>
-              {day ? day.getDate() : ''}
-            </div>
-          ))}
-        </div>
+      <div className="flex items-center gap-1">
+        <span className="w-4 h-4 rounded-full bg-red-500"></span>
+        <span className="text-sm text-gray-700">Ocupado</span>
       </div>
+    </div>
 
-   {/* Autos */}
+    {/* DERECHA: Volver */}
+    <button
+      onClick={() => setSelectedWeek(null)}
+      className="p-2 bg-blue-500 text-white rounded text-sm md:text-base hover:bg-blue-600 transition cursor-pointer hover:scale-105"
+    >
+      Volver a la vista del mes
+    </button>
+  </div>
+
+  {/* Encabezado de días */}
+  <div className="mt-4 grid grid-cols-8 gap-2 text-sm sm:text-base items-center">
+    <div className="font-semibold text-left text-xs sm:text-sm"></div>
+    {['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].map((day, index) => (
+      <div key={index} className="text-center font-semibold text-xs sm:text-sm">
+        {day}
+      </div>
+    ))}
+  </div>
+
+  {/* Fechas de la semana */}
+  <div className="grid grid-cols-8 gap-2 text-sm sm:text-base items-center mt-1">
+    <div></div>
+    {selectedWeek.map(({ day }, index) => (
+      <div key={index} className="text-center">
+        {day ? day.getDate() : ''}
+      </div>
+    ))}
+  </div>
+
+ {/* Autos */}
 <div className="mt-6">
-  <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold">
+  <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">
     Mis Automóviles
   </h3>
 
-  {/* Contenedor con altura fija y scroll interno */}
-  <div className="mt-1 max-h-[300px] overflow-y-auto pr-2">
+  {/* Contenedor con altura relativa al viewport y scroll interno */}
+  <div className="mt-1 max-h-[calc(100vh-320px)] overflow-y-auto pr-2 overflow-x-hidden">
     <ul className="space-y-2">
       {loading ? (
         <li className="text-center">Cargando autos...</li>
       ) : (
         cars
           .sort((a, b) => {
-            const cmp = a.brand.localeCompare(b.brand)
-            return cmp !== 0 ? cmp : a.model.localeCompare(b.model)
+            const cmp = a.brand.localeCompare(b.brand);
+            return cmp !== 0 ? cmp : a.model.localeCompare(b.model);
           })
           .map((car, i) => (
             <li
               key={i}
-              className="grid grid-cols-8 gap-1 items-center text-xs sm:text-sm md:text-base"
+              className="grid grid-cols-8 gap-2 items-center text-xs sm:text-sm md:text-base"
             >
-              {/* Marca/Modelo */}
               <div className="col-span-1 font-medium pl-1 sm:pl-2 text-left">
                 {car.brand} {car.model}
               </div>
-              {/* Círculos de cada día */}
               {selectedWeek.map(({ day }, j) => (
                 <div key={j} className="col-span-1 flex justify-center">
                   {day && (
-                    <button
-                      onClick={() =>
-                        isDayActive(car, day) && handleCircleClick(car, day)
-                      }
-                      className={`rounded-full transition-transform cursor-pointer
-                        w-6 h-6 sm:w-8 sm:h-8
-                        ${getCircleColor(car, day)}
-                        hover:scale-110`}
-                    />
+                    <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                      <button
+                        onClick={() =>
+                          isDayActive(car, day) && handleCircleClick(car, day)
+                        }
+                        className={`
+                          rounded-full w-6 h-6 sm:w-8 sm:h-8
+                          ${getCircleColor(car, day)}
+                          transition-transform duration-150
+                          hover:scale-[1.2] origin-center
+                          transform-gpu will-change-transform cursor-pointer
+                        `}
+                      />
+                    </div>
                   )}
                 </div>
               ))}
@@ -336,6 +342,7 @@ return (
     </ul>
   </div>
 </div>
+
 </div>
       )}
 
