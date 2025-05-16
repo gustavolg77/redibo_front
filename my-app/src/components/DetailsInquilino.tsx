@@ -30,9 +30,10 @@ interface Inquilino {
 interface DetailsInquilinoProps {
   tenantId: number;
   inquilinosData?: Inquilino[];
+  onClose?: () => void;
 }
 
-const DetailsInquilino = ({ tenantId, inquilinosData }: DetailsInquilinoProps) => {
+const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilinoProps) => {
   const [inquilino, setInquilino] = useState<Inquilino | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +80,19 @@ const DetailsInquilino = ({ tenantId, inquilinosData }: DetailsInquilinoProps) =
 
     fetchInquilino();
   }, [tenantId, inquilinosData]);
+
+  useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && onClose) {
+      e.stopPropagation();
+      onClose();
+    }
+  };
+  document.addEventListener('keydown', handleKeyDown);
+  return () => document.removeEventListener('keydown', handleKeyDown);
+}, [onClose]);
+
+
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -195,7 +209,20 @@ const DetailsInquilino = ({ tenantId, inquilinosData }: DetailsInquilinoProps) =
   const whatsappUrl = `https://wa.me/${inquilino.phone.replace(/[^\d]/g, '')}`;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8 w-full">
+    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-3x3 relative">
+    {/* Encabezado con título y botón de cierre */}
+    <div className="flex justify-between items-center mb-6 pb-2 border-b border-gray-200">
+      <h2 className="text-2xl font-bold text-[#FCA311]">Detalles del inquilino</h2>
+      <button
+        onClick={() => onClose && onClose()}
+        className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+        aria-label="Cerrar"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
 
       {showSuccessMessage && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -316,10 +343,8 @@ const DetailsInquilino = ({ tenantId, inquilinosData }: DetailsInquilinoProps) =
           </div>
         </div>
       </div>
-
-      <div className="mt-8">
-        <h3 className="text-[1.44rem] font-medium text-[#FCA311] mb-4">Historial de alquileres</h3>
-
+      <div className="mt-6">
+      <h3 className="text-xl font-medium text-[#FCA311] mb-4">Historial de alquileres</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-[#FCA311]">
@@ -353,9 +378,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData }: DetailsInquilinoProps) =
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                      {rental.owner}
-
-                      <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between">
                         <span>{rental.owner}</span>
 
                         {rental.status === 'completed' && rental.owner === 'Tu' && !rental.rating && ratingRentalId !== rental.id && (

@@ -1,12 +1,37 @@
-import React, { useState, useRef, useEffect } from 'react'
-import Image from 'next/image'
-import MonthView from './MonthView'
+import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import MonthView from './MonthView';
+import DetailsInquilino from './DetailsInquilino';
+
+interface Inquilino {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  image: string;
+  totalRentals: number;
+  rentals: {
+    id: number;
+    carId: number;
+    startDate: string;
+    endDate: string;
+    status: 'active' | 'completed';
+    owner: string;
+    carBrand: string;
+    carModel: string;
+  }[];
+}
+
 
 export default function CalendarButton() {
-  const [showDashboard, setShowDashboard] = useState(false)
-  const [selectedMonth, setSelectedMonth] = useState<number | null>(null)
-  const [selectedYear] = useState<number>(new Date().getFullYear())
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [selectedYear] = useState<number>(new Date().getFullYear());
+  const [showInquilinoModal, setShowInquilinoModal] = useState(false);
+  const [selectedInquilinoId, setSelectedInquilinoId] = useState<number | null>(null);
+  const [inquilinos, setInquilinos] = useState<Inquilino[]>([]);
+  const [selectedInquilino, setSelectedInquilino] = useState<Inquilino | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
 interface Props {
   showDashboard: boolean;
@@ -39,6 +64,19 @@ interface Props {
       document.body.style.overflow = ''
     }
   }, [showDashboard])
+
+  useEffect(() => {
+    const fetchInquilinos = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/inquilinos');
+        const data = await response.json();
+        setInquilinos(data);
+      } catch (error) {
+        console.error("Error cargando inquilinos:", error);
+      }
+    };
+    fetchInquilinos();
+  }, []);
 
   useEffect(() => {
     const storedMonth = localStorage.getItem('selectedMonth')
@@ -159,7 +197,15 @@ interface Props {
                 </div>
               ) : (
                 <div>
-                  <MonthView month={selectedMonth} year={selectedYear} />
+                  <MonthView 
+  month={selectedMonth} 
+  year={selectedYear}
+  inquilinosData={inquilinos}
+  onInquilinoClick={(id) => {
+    setSelectedInquilinoId(id);
+    setShowInquilinoModal(true);
+  }}
+/>
                   <button
                     onClick={resetMonthSelection}
                     className="mt-4 px-4 py-2 text-sm sm:px-5 sm:py-2.5 sm:text-base md:px-6 md:py-3 md:text-base 
@@ -171,6 +217,25 @@ interface Props {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+      {/* Modal para DetailsInquilino */}
+      {showInquilinoModal && selectedInquilinoId && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4"
+          onClick={() => setShowInquilinoModal(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            <DetailsInquilino
+              tenantId={selectedInquilinoId}
+              inquilinosData={inquilinos}
+              onClose={() => setShowInquilinoModal(false)}
+            />
           </div>
         </div>
       )}

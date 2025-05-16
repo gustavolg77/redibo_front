@@ -41,8 +41,13 @@ interface Inquilino {
     carModel: string;
   }[];
 }
-
-const MonthView = ({ month, year }: { month: number; year: number }) => {
+interface MonthViewProps {
+  month: number;
+  year: number;
+  onInquilinoClick?: (id: number) => void;
+  inquilinosData?: Inquilino[];
+}
+const MonthView = ({ month, year, onInquilinoClick, inquilinosData}: MonthViewProps) => {
   const [selectedWeek, setSelectedWeek] = useState<DayData[] | null>(null);
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,7 +55,7 @@ const MonthView = ({ month, year }: { month: number; year: number }) => {
   const [modalData, setModalData] = useState<ModalData | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [inquilinos, setInquilinos] = useState<Inquilino[]>([]);
-  const [selectedInquilino, setSelectedInquilino] = useState<Inquilino | null>(null);
+
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -183,7 +188,14 @@ const handleCircleClick = (car: Car, day: Date) => {
 const getCircleColor = (car: Car, day: Date): string => {
   return isDayActive(car, day) ? 'bg-red-500' : 'bg-green-500';
 };
-
+const handleVerDetallesInquilino = () => {
+  if (!modalData || !onInquilinoClick) return;
+  const tenant = inquilinos.find(i => i.name === modalData.rental.tenant);
+  if (tenant) {
+    onInquilinoClick(tenant.id);
+    setModalData(null);
+  }
+};
 const days = getDaysInMonth(month, year);
 const weeks = buildWeeks(days);
 return (
@@ -364,43 +376,14 @@ return (
                 Cerrar
               </button>
               <button
-                className="bg-[#FCA311] text-white px-3 py-2 rounded text-sm hover:bg-[#11295B] cursor-pointer hover:scale-105"
-                onClick={() => {
-                  const tenant = inquilinos.find(i => i.name === modalData.rental.tenant);
-                  setSelectedInquilino(tenant || null);
-                  setShowDetails(true);
-                  setModalData(null);
-                }}
-              >
-                Ver detalles del inquilino
-              </button>
+          className="bg-[#FCA311] text-white px-3 py-2 rounded text-sm hover:bg-[#11295B] cursor-pointer hover:scale-105"
+          onClick={handleVerDetallesInquilino}
+        >
+          Ver detalles del inquilino
+        </button>
             </div>
           </div>
         </div>
-      )}
-
-      {/* Modal de detalles del inquilino */}
-      {showDetails && selectedInquilino && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="fixed inset-0 bg-black opacity-80 z-40"></div>
-          <div className="relative z-50 w-full max-w-5xl mx-auto">
-          <div className="relative bg-white rounded-lg p-6 shadow-lg max-h-[90vh] overflow-y-auto">  
-            <h2 className="text-[2.074rem] font-semibold text-[#FCA311] mb-4">Detalles del Inquilino</h2>
-            <DetailsInquilino
-              tenantId={selectedInquilino.id}
-              inquilinosData={inquilinos}
-            /> 
-            
-            <button
-              onClick={() => setShowDetails(false)}
-              className="absolute top-1 right-5 text-gray-500 hover:text-gray-700 text-3xl font-bold focus:outline-none cursor-pointer"
-              aria-label="Cerrar"
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      </div>
       )}
     </div>
   );
