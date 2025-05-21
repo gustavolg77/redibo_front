@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 
-import { FiAlertTriangle, FiMail, FiPhone, FiClock, FiCheck } from "react-icons/fi";
-import { FaWhatsapp, FaStar } from "react-icons/fa";
+import { FiAlertTriangle, FiMail, FiPhone, FiClock } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface Rental {
   id: number;
@@ -14,7 +14,6 @@ interface Rental {
   owner: string;
   carBrand: string;
   carModel: string;
-  rating?: number;
 }
 
 interface Inquilino {
@@ -37,12 +36,8 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
   const [inquilino, setInquilino] = useState<Inquilino | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [ratingRentalId, setRatingRentalId] = useState<number | null>(null);
-  const [currentRating, setCurrentRating] = useState(0);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showInvalidPhoneModal, setShowInvalidPhoneModal] = useState(false);
   const [invalidMessage, setInvalidMessage] = useState('');
-
 
   useEffect(() => {
     const fetchInquilino = async () => {
@@ -82,17 +77,15 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
   }, [tenantId, inquilinosData]);
 
   useEffect(() => {
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && onClose) {
-      e.stopPropagation();
-      onClose();
-    }
-  };
-  document.addEventListener('keydown', handleKeyDown);
-  return () => document.removeEventListener('keydown', handleKeyDown);
-}, [onClose]);
-
-
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -102,45 +95,6 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
       timeZone: 'UTC'
     };
     return new Date(dateString).toLocaleDateString('es-ES', options);
-  };
-  const handleRateClick = (rentalId: number) => {
-    setRatingRentalId(rentalId === ratingRentalId ? null : rentalId);
-    setCurrentRating(0);
-  };
-
-  const handleStarClick = (rentalId: number, rating: number) => {
-    setCurrentRating(rating);
-  };
-
-  const handleConfirmRating = async (rentalId: number) => {
-    if (currentRating === 0) return;
-
-    try {
-
-      if (inquilino) {
-        const updatedRentals = inquilino.rentals.map(rental => {
-          if (rental.id === rentalId) {
-            return { ...rental, rating: currentRating };
-          }
-          return rental;
-        });
-
-        setInquilino({
-          ...inquilino,
-          rentals: updatedRentals
-        });
-      }
-
-      setShowSuccessMessage(true);
-      setRatingRentalId(null);
-
-      setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 2000);
-
-    } catch (err) {
-      setError("Error al guardar la calificación");
-    }
   };
 
   const handleSendMessage = async () => {
@@ -174,8 +128,6 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
     }
   };
 
-
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -205,35 +157,24 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
       </div>
     );
   }
-
+  
   const whatsappUrl = `https://wa.me/${inquilino.phone.replace(/[^\d]/g, '')}`;
-
+  
   return (
     <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-3x3 relative">
-    {/* Encabezado con título y botón de cierre */}
-    <div className="flex justify-between items-center mb-6 pb-2 border-b border-gray-200">
-      <h2 className="text-2xl font-bold text-[#FCA311]">Detalles del inquilino</h2>
-      <button
-        onClick={() => onClose && onClose()}
-        className="text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
-        aria-label="Cerrar"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-      {showSuccessMessage && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-4 max-w-sm">
-            <div className="flex items-center space-x-3 text-green-600">
-              <FiCheck className="h-6 w-6" />
-              <p className="font-medium">Calificación exitosa</p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Encabezado con título y botón de cierre */}
+      <div className="flex justify-between items-center mb-6 pb-2 border-b border-gray-200">
+        <h2 className="text-2xl font-bold text-[#FCA311]">Detalles del inquilino</h2>
+        <button
+          onClick={() => onClose && onClose()}
+          className="text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
+          aria-label="Cerrar"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
       {showInvalidPhoneModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -343,8 +284,9 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
           </div>
         </div>
       </div>
+
       <div className="mt-6">
-      <h3 className="text-xl font-medium text-[#FCA311] mb-4">Historial de alquileres</h3>
+        <h3 className="text-xl font-medium text-[#FCA311] mb-4">Historial de alquileres</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-[#FCA311]">
@@ -378,52 +320,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center justify-between">
-                        <span>{rental.owner}</span>
-
-                        {rental.status === 'completed' && rental.owner === 'Tu' && !rental.rating && ratingRentalId !== rental.id && (
-                          <button
-                            onClick={() => handleRateClick(rental.id)}
-                            className="ml-4 bg-[#FCA311] text-white px-4 py-1 rounded text-xs font-medium hover:bg-[#e29100] transition-colors"
-                          >
-                            Calificar
-                          </button>
-                        )}
-
-                        {rental.rating && (
-                          <div className="flex items-center ml-2">
-                            {[...Array(5)].map((_, i) => (
-                              <FaStar
-                                key={i}
-                                className={`${i < (rental.rating || 0) ? "text-yellow-400" : "text-gray-300"}`}
-                              />
-                            ))}
-                          </div>
-                        )}
-
-                        {ratingRentalId === rental.id && (
-                          <div className="flex items-center ml-2 space-x-1">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <FaStar
-                                key={star}
-                                className={`cursor-pointer ${currentRating >= star ? "text-yellow-400" : "text-gray-300"
-                                  }`}
-                                onClick={() => handleStarClick(rental.id, star)}
-                              />
-                            ))}
-                            <button
-                              onClick={() => handleConfirmRating(rental.id)}
-                              disabled={currentRating === 0}
-                              className={`ml-2 rounded-full p-1 ${currentRating > 0
-                                ? "bg-green-500 hover:bg-green-600"
-                                : "bg-gray-300 cursor-not-allowed"
-                                } text-white transition-colors`}
-                            >
-                              <FiCheck className="h-4 w-4" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                      {rental.owner}
                     </td>
                   </tr>
                 ))
