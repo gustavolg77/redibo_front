@@ -30,7 +30,7 @@ const Alertas = () => {
       const res = await fetch(`http://localhost:5000/api/alerts/${id}`);
       const data = await res.json();
       setSelectedAlert(data);
-      setIsBlurred(true); // Activar el efecto blur cuando se muestra el modal
+      setIsBlurred(true); 
     } catch (error) {
       console.error("Error al obtener la alerta:", error);
     }
@@ -38,7 +38,7 @@ const Alertas = () => {
 
   const handleCloseModal = () => {
     setSelectedAlert(null);
-    setIsBlurred(false); // Desactivar el efecto blur cuando se cierra el modal
+    setIsBlurred(false); 
   };
 
   const handleDelete = async (id: number) => {
@@ -46,7 +46,7 @@ const Alertas = () => {
       await fetch(`http://localhost:5000/api/alerts/${id}`, {
         method: "DELETE",
       });
-      fetchAlerts(); // recarga lista
+      fetchAlerts(); 
     } catch (error) {
       console.error("Error al eliminar la alerta:", error);
     }
@@ -58,7 +58,7 @@ const Alertas = () => {
 
   return (
     <div className="p-4 relative">
-      {/* Contenedor principal que tendrá el blur cuando se active */}
+      
       <div className={`transition-all duration-300 ${isBlurred ? "blur-sm" : ""}`}>
         <h2 className="text-xl font-bold mb-2">Alertas</h2>
         <ul className="space-y-2">
@@ -86,7 +86,7 @@ const Alertas = () => {
         </ul>
       </div>
 
-      {/* Modal que se mostrará por encima del contenido borroso */}
+      
       {selectedAlert && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div 
