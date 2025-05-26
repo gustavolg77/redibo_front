@@ -301,7 +301,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
                     {inquilino.phone ? (
                       <button
                         onClick={handleSendMessage}
-                        className="hover:text-[#25D366] transition-colors text-left"
+                        className="hover:text-[#25D366] transition-colors text-left cursor-pointer"
                       >
                         Enviar mensaje
                       </button>
