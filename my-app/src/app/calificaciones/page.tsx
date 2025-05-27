@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { FiBell, FiUser } from "react-icons/fi";
 import CalificarInquilino from "@/components/CalificarInquilino";
+import ComentariosRecibidos from "@/components/ComentariosRecibidos";
 
 export default function CalificacionesPage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,11 +67,10 @@ export default function CalificacionesPage() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`py-2 px-4 font-semibold border-b-2 transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? "border-orange-500 text-orange-600 cursor-pointer"
-                  : "border-transparent text-gray-600 hover:text-orange-500 cursor-pointer"
-              }`}
+              className={`py-2 px-4 font-semibold border-b-2 transition-colors duration-200 ${activeTab === tab.id
+                ? "border-orange-500 text-orange-600 cursor-pointer"
+                : "border-transparent text-gray-600 hover:text-orange-500 cursor-pointer"
+                }`}
               onClick={() => setActiveTab(tab.id)}
             >
               {tab.label}
@@ -86,14 +86,14 @@ export default function CalificacionesPage() {
         )}
         {activeTab === "comentarios" && (
           <div>
-            <p className="text-gray-700">Aquí irán los comentarios recibidos.</p>
+            <ComentariosRecibidos />
           </div>
         )}
         {activeTab === "calificar" && (
           <div>
-      <h2 className="text-2xl font-bold mb-4"></h2>
-      <CalificarInquilino />
-    </div>
+            <h2 className="text-2xl font-bold mb-4"></h2>
+            <CalificarInquilino />
+          </div>
         )}
       </main>
     </>
