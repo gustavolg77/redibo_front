@@ -91,7 +91,7 @@ export default function CalificacionesPage() {
         )}
         {activeTab === "calificar" && (
           <div>
-      <h2 className="text-2xl font-bold mb-4">Calificaciones</h2>
+      <h2 className="text-2xl font-bold mb-4"></h2>
       <CalificarInquilino />
     </div>
         )}
