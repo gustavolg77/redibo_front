@@ -210,7 +210,7 @@ interface Props {
                     onClick={resetMonthSelection}
                     className="mt-4 px-4 py-2 text-sm sm:px-5 sm:py-2.5 sm:text-base md:px-6 md:py-3 md:text-base 
                                bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md 
-                               hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 self-center"
+                               hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 self-center cursor-pointer"
                   >
                     Volver a los meses
                   </button>

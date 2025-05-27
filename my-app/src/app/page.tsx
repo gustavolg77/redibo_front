@@ -5,7 +5,8 @@ import { FiBell, FiUser, FiX, FiAlertTriangle } from "react-icons/fi";
 import { Car } from '@/types';
 import HostView from '@/components/HostView';
 import { Inter } from "next/font/google";
-import CalendarButton from "@/components/CalendarButton"
+import CalendarButton from "@/components/CalendarButton";
+import { useRouter } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -24,6 +25,7 @@ interface Alert {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
@@ -133,11 +135,21 @@ export default function Home() {
 
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-[15]">
-                  <ul className="py-1 text-sm text-gray-700">
-                    <li>
-                      <button className="w-full text-left px-4 py-2 hover:bg-orange-100 transition cursor-pointer">Mis Autos</button>
-                    </li>
-                  </ul>
+                 <ul className="py-1 text-sm text-gray-700">
+  <li>
+    <button className="w-full text-left px-4 py-2 hover:bg-orange-100 transition cursor-pointer">
+      Mis Autos
+    </button>
+  </li>
+  <li>
+    <button
+      onClick={() => router.push("/calificaciones")}
+      className="w-full text-left px-4 py-2 hover:bg-orange-100 transition cursor-pointer"
+    >
+      Calificaciones
+    </button>
+  </li>
+</ul>
                 </div>
               )}
             </div>
