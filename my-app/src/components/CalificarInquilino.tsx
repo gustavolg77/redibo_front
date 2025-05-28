@@ -1,5 +1,19 @@
 "use client";
 import Image from "next/image";
+import { useState } from "react";
+import CalificarModal from "./CalificarModal"; 
+
+
+interface Inquilino {
+  id: number;
+  nombre: string;
+  foto: string;
+  calificacion: number;
+  comentarios: number;
+  verificado: boolean;
+  puedeCalificar?: boolean;
+}
+
 
 const inquilinos = [
   {
@@ -48,9 +62,36 @@ function Star({ fillPercent }: { fillPercent: number }) {
   );
 }
 export default function CalificarInquilino() {
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [selectedInquilino, setSelectedInquilino] = useState<Inquilino | null>(null);
+
+ 
+   const abrirModal = (inq: any) => {
+   
+    const inquilinoParaModal: Inquilino = {
+      id: inq.id,
+      nombre: inq.nombre,
+      foto: inq.img,
+      calificacion: inq.promedio,
+      comentarios: inq.totalReseñas,
+      verificado: true, 
+      puedeCalificar: true
+    };
+    
+    setSelectedInquilino(inquilinoParaModal);
+    setIsModalOpen(true);
+  };
+
+  
+  const cerrarModal = () => {
+    setIsModalOpen(false);
+    setSelectedInquilino(null);
+  }
+
+
   return (
-<div className="w-full max-w-[92rem] mx-auto px-4">
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="w-full max-w-[92rem] mx-auto px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {inquilinos.map((inq) => {
           const fullStars = Math.floor(inq.promedio);
           const partialFill = (inq.promedio - fullStars) * 100;
@@ -94,7 +135,10 @@ export default function CalificarInquilino() {
                   <button className="bg-blue-500 hover:bg-blue-600 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm">
                     VER
                   </button>
-                  <button className="bg-orange-400 hover:bg-orange-500 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm">
+                  <button 
+                    onClick={() => abrirModal(inq)}
+                    className="bg-orange-400 hover:bg-orange-500 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm"
+                  >
                     CALIFICAR
                   </button>
                 </div>
@@ -103,6 +147,14 @@ export default function CalificarInquilino() {
           );
         })}
       </div>
+
+       <CalificarModal
+        isOpen={isModalOpen}
+        onClose={cerrarModal}
+        inquilino={selectedInquilino}
+      
+       />
+
     </div>
   );
 }
