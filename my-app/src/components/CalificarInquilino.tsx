@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import CalificarModal from "./CalificarModal"; 
+import CalificarModal from "./CalificarModal";
+import ComentariosInquilino from "./ComentariosInquilino"; 
 
 
 interface Inquilino {
@@ -26,14 +27,14 @@ const inquilinos = [
   {
     id: 2,
     nombre: "Diego Flores",
-    img: "/images/diego.png",
+    img: "https://media.istockphoto.com/id/1399565382/es/foto/joven-empresario-mestizo-feliz-de-pie-con-los-brazos-cruzados-trabajando-solo-en-una-oficina.jpg?s=612x612&w=0&k=20&c=Tls7PDwhSbA9aaVg0RkpfPfWYaQrfecN319aOCKuU34=",
     totalReseñas: 4,
     promedio: 3.0,
   },
   {
     id: 3,
     nombre: "Camila Torres",
-    img: "/images/camila.png",
+    img: "https://media.istockphoto.com/id/1389348844/es/foto/foto-de-estudio-de-una-hermosa-joven-sonriendo-mientras-est%C3%A1-de-pie-sobre-un-fondo-gris.jpg?s=612x612&w=0&k=20&c=kUufmNoTnDcRbyeHhU1wRiip-fNjTWP9owjHf75frFQ=",
     totalReseñas: 6,
     promedio: 4.2,
   },
@@ -63,6 +64,7 @@ function Star({ fillPercent }: { fillPercent: number }) {
 }
 export default function CalificarInquilino() {
    const [isModalOpen, setIsModalOpen] = useState(false);
+   const [isComentariosModalOpen, setIsComentariosModalOpen] = useState(false);
    const [selectedInquilino, setSelectedInquilino] = useState<Inquilino | null>(null);
 
  
@@ -79,14 +81,36 @@ export default function CalificarInquilino() {
     };
     
     setSelectedInquilino(inquilinoParaModal);
+  
     setIsModalOpen(true);
   };
+  const abrirComentariosModal = (inq: any) => {
+    const inquilinoParaModal: Inquilino = {
+      id: inq.id,
+      nombre: inq.nombre,
+      foto: inq.img,
+      calificacion: inq.promedio,
+      comentarios: inq.totalReseñas,
+      verificado: true
+    };
+    
+    setSelectedInquilino(inquilinoParaModal);
+    setIsComentariosModalOpen(true); // Solo abrir modal de comentarios
+  };
+
 
   
   const cerrarModal = () => {
+    
     setIsModalOpen(false);
     setSelectedInquilino(null);
   }
+
+  const cerrarModalComentarios = () => {
+    setIsComentariosModalOpen(false);
+    setSelectedInquilino(null);
+  };
+
 
 
   return (
@@ -132,7 +156,10 @@ export default function CalificarInquilino() {
                   </span>
                 </div>
                 <div className="flex gap-2 mt-4 flex-wrap">
-                  <button className="bg-blue-500 hover:bg-blue-600 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm">
+                  <button
+                   onClick={() => abrirComentariosModal(inq)} 
+
+                   className="bg-blue-500 hover:bg-blue-600 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm">
                     VER
                   </button>
                   <button 
@@ -148,13 +175,28 @@ export default function CalificarInquilino() {
         })}
       </div>
 
+      {isModalOpen && selectedInquilino && (
        <CalificarModal
         isOpen={isModalOpen}
         onClose={cerrarModal}
         inquilino={selectedInquilino}
-      
        />
+      )}
 
-    </div>
+      {isComentariosModalOpen && selectedInquilino && (
+       <ComentariosInquilino
+          inquilino={{
+         id: selectedInquilino.id,
+         nombre: selectedInquilino.nombre,
+         img: selectedInquilino.foto,
+         promedio: selectedInquilino.calificacion,
+         totalReseñas: selectedInquilino.comentarios
+         }}
+      onClose={cerrarModalComentarios}
+      isOpen={isComentariosModalOpen}
+     />
+     )}
+
+    </div>  
   );
 }
