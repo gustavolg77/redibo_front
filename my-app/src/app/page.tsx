@@ -7,7 +7,7 @@ import HostView from '@/components/HostView';
 import { Inter } from "next/font/google";
 import CalendarButton from "@/components/CalendarButton";
 import { useRouter } from "next/navigation";
-
+import { apiFetch } from '../utils/api';
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 interface Alert {
@@ -34,31 +34,29 @@ export default function Home() {
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const [showModal, setShowModal] = useState(false);
   const alertsContainerRef = useRef<HTMLDivElement>(null);
+useEffect(() => {
+  const fetchAlerts = async () => {
+    try {
+      const data = await apiFetch('/api/alerts');
+      setAlerts(data);
+    } catch (error) {
+      console.error("Error al obtener alertas:", error);
+    }
+  };
 
-  useEffect(() => {
-    const fetchAlerts = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/alerts");
-        const data = await res.json();
-        setAlerts(data);
-      } catch (error) {
-        console.error("Error al obtener alertas:", error);
-      }
-    };
+  const fetchCars = async () => {
+    try {
+      const data = await apiFetch('/api/cars');
+      setCars(data.sort((a: Car, b: Car) => b.totalRentals - a.totalRentals));
+    } catch (error) {
+      console.error("Error al obtener carros:", error);
+    }
+  };
 
-    const fetchCars = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/cars");
-        const data = await res.json();
-        setCars(data.sort((a: Car, b: Car) => b.totalRentals - a.totalRentals));
-      } catch (error) {
-        console.error("Error al obtener carros:", error);
-      }
-    };
+  fetchAlerts();
+  fetchCars();
+}, []);
 
-    fetchAlerts();
-    fetchCars();
-  }, []);
 
   const unviewedAlertsCount = alerts.filter(alert => !alert.viewed).length;
 
