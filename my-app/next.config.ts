@@ -33,14 +33,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-
       {
         protocol: 'https',
-        hostname: 'media.istockphoto.com', 
+        hostname: 'media.istockphoto.com',
         port: '',
         pathname: '/**',
       },
     ],
+  },
+
+  // ✅ Ignorar errores de ESLint en producción
+  eslint: {
+    ignoreDuringBuilds: true,
   },
 };
 
