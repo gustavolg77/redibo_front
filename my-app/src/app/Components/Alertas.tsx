@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "../../utils/api";
 
 interface Alert {
   id: number;
@@ -17,8 +18,7 @@ const Alertas = () => {
 
   const fetchAlerts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/alerts");
-      const data = await res.json();
+      const data = await apiFetch("/api/alerts");
       setAlerts(data);
     } catch (error) {
       console.error("Error al cargar alertas:", error);
@@ -27,8 +27,7 @@ const Alertas = () => {
 
   const handleView = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/alerts/${id}`);
-      const data = await res.json();
+      const data = await apiFetch(`/api/alerts/${id}`);
       setSelectedAlert(data);
       setIsBlurred(true); 
     } catch (error) {
@@ -43,7 +42,7 @@ const Alertas = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://localhost:5000/api/alerts/${id}`, {
+      await apiFetch(`/api/alerts/${id}`, {
         method: "DELETE",
       });
       fetchAlerts(); 
@@ -86,7 +85,6 @@ const Alertas = () => {
         </ul>
       </div>
 
-      
       {selectedAlert && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div 

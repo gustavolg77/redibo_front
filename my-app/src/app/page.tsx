@@ -82,14 +82,12 @@ useEffect(() => {
   const handleDelete = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    try {
-      await fetch(`http://localhost:5000/api/alerts/${id}`, {
-        method: "DELETE",
-      });
-      setAlerts((prev) => prev.filter((alert) => alert.id !== id));
-    } catch (error) {
-      console.error("Error al eliminar alerta:", error);
-    }
+     try {
+    await apiFetch(`/api/alerts/${id}`, { method: "DELETE" });
+    setAlerts((prev) => prev.filter((alert) => alert.id !== id));
+  } catch (error) {
+    console.error("Error al eliminar alerta:", error);
+  }
   };
 
   const handleViewMore = (alert: Alert) => {
