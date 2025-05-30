@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import MonthView from './MonthView';
 import DetailsInquilino from './DetailsInquilino';
+import { apiFetch } from "../utils/api"; // Agrega esta línea al inicio si no la tienes
 
 interface Inquilino {
   id: number;
@@ -66,17 +67,16 @@ interface Props {
   }, [showDashboard])
 
   useEffect(() => {
-    const fetchInquilinos = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/inquilinos');
-        const data = await response.json();
-        setInquilinos(data);
-      } catch (error) {
-        console.error("Error cargando inquilinos:", error);
-      }
-    };
-    fetchInquilinos();
-  }, []);
+  const fetchInquilinos = async () => {
+    try {
+      const data = await apiFetch('/api/inquilinos');
+      setInquilinos(data);
+    } catch (error) {
+      console.error("Error cargando inquilinos:", error);
+    }
+  };
+  fetchInquilinos();
+}, []);
 
   useEffect(() => {
     const storedMonth = localStorage.getItem('selectedMonth')

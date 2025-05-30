@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DetailsInquilino from './DetailsInquilino';
+import { apiFetch } from "../utils/api"; // Agrega esta línea al inicio si no la tienes
 
 type Rental = {
   startDate: string;
@@ -56,38 +57,32 @@ const MonthView = ({ month, year, onInquilinoClick, inquilinosData}: MonthViewPr
   const [showDetails, setShowDetails] = useState(false);
   const [inquilinos, setInquilinos] = useState<Inquilino[]>([]);
 
+useEffect(() => {
+  const fetchCars = async () => {
+    try {
+      const data = await apiFetch('/api/cars');
+      setCars(data);
+    } catch (error) {
+      console.error(error);
+      setError('Hubo un error al cargar los autos.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchCars();
+}, []);
 
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/cars');
-        if (!response.ok) {
-          throw new Error(`Error al obtener los autos: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setCars(data);
-      } catch (error) {
-        console.error(error);
-        setError('Hubo un error al cargar los autos.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCars();
-  }, []);
-
-  useEffect(() => {
-    const fetchInquilinos = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/inquilinos');
-        const data = await response.json();
-        setInquilinos(data);
-      } catch (error) {
-        console.error("Error cargando inquilinos:", error);
-      }
-    };
-    fetchInquilinos();
-  }, []);
+useEffect(() => {
+  const fetchInquilinos = async () => {
+    try {
+      const data = await apiFetch('/api/inquilinos');
+      setInquilinos(data);
+    } catch (error) {
+      console.error("Error cargando inquilinos:", error);
+    }
+  };
+  fetchInquilinos();
+}, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
