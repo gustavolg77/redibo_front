@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { FaStar } from 'react-icons/fa';
+import { apiFetch } from '../utils/api';
 
 type Rating = {
     idCar: number;
@@ -28,16 +29,11 @@ export default function ComentariosRecibidos() {
     useEffect(() => {
         const fetchRatings = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/ratings');
-                if (!res.ok) throw new Error('Error al obtener calificaciones');
-                const data: Rating[] = await res.json();
+                const data: Rating[] = await apiFetch('/api/ratings');
 
                 const ratingsWithCars: RatingWithCar[] = await Promise.all(
                     data.map(async (rating) => {
-                        const carRes = await fetch(`http://localhost:5000/api/cars/${rating.idCar}`);
-                        if (!carRes.ok) throw new Error('Error al obtener auto');
-                        const car: Car = await carRes.json();
-
+                        const car: Car = await apiFetch(`/api/cars/${rating.idCar}`);
                         return {
                             ...rating,
                             car,
@@ -110,7 +106,7 @@ export default function ComentariosRecibidos() {
                                     {[...Array(5)].map((_, i) => (
                                         <FaStar
                                             key={i}
-                                            color={i < ratingNumber ? '#FBBF24' /* amarillo */ : '#D1D5DB' /* gris */}
+                                            color={i < ratingNumber ? '#FBBF24' : '#D1D5DB'}
                                             size={20}
                                             aria-label={i < ratingNumber ? 'Estrella llena' : 'Estrella vacía'}
                                         />
