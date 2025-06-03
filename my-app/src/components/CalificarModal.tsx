@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 
-
 interface Inquilino {
   id: number;
   nombre: string;
@@ -26,6 +25,10 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
   const [comentario, setComentario] = useState<string>('');
   const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
   const [comentarioEnviado, setComentarioEnviado] = useState<boolean>(false);
+  
+  // Estados para mensajes de advertencia
+  const [warningMessage, setWarningMessage] = useState<string>('');
+  const [showWarning, setShowWarning] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -36,6 +39,8 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
         setComentario('');
         setShowSuccessMessage(false);
         setComentarioEnviado(false);
+        setWarningMessage('');
+        setShowWarning(false);
       }, 300);
     }
   }, [isOpen]);
@@ -67,18 +72,158 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
     }, 2000);
   };
 
+  // Función para validar caracteres prohibidos
+  const validateForbiddenCharacters = (text: string): boolean => {
+    const forbiddenChars = /[#@$%^&*]/;
+    return forbiddenChars.test(text);
+  };
+
+  // Función para validar si es solo numérico
+  const isOnlyNumeric = (text: string): boolean => {
+    const trimmedText = text.trim();
+    return /^\d+$/.test(trimmedText) && trimmedText.length > 0;
+  };
+
+  // Función para validar espacios en blanco
+  const isOnlyWhitespace = (text: string): boolean => {
+    return text.trim().length === 0 && text.length > 0;
+  };
+
+  // Función para normalizar espacios (elimina espacios múltiples)
+  const normalizeSpaces = (text: string): string => {
+    return text.replace(/\s+/g, ' ');
+  };
+
+  // Función para detectar comentarios sin sentido - MEJORADA
+  const isNonsenseComment = (text: string): boolean => {
+    const trimmedText = text.trim().toLowerCase();
+    if (trimmedText.length === 0) return false;
+    
+    // Detectar caracteres repetidos (3 o más del mismo carácter seguidos)
+    const repeatedChars = /(.)\1{2,}/.test(trimmedText);
+    
+    // Detectar secuencias sin sentido (muchas consonantes seguidas sin vocales)
+    const nonsensePattern = /[bcdfghjklmnpqrstvwxyz]{5,}/i.test(trimmedText);
+    
+    // Detectar mezcla excesiva de números y letras (como 12747449849hola)
+    const numberLetterMix = /^\d{5,}[a-z]+$/i.test(trimmedText.replace(/\s/g, '')) || 
+                           /^[a-z]+\d{5,}$/i.test(trimmedText.replace(/\s/g, ''));
+    
+    // Detectar palabras repetidas (como "hola hola hola")
+    const words = trimmedText.split(/\s+/);
+    const uniqueWords = [...new Set(words)];
+    const repeatedWords = words.length >= 3 && uniqueWords.length === 1;
+    
+    // Detectar patrones repetitivos simples (como "hola hola mmm")
+    const simpleRepeatedPattern = words.length >= 3 && uniqueWords.length <= 2;
+    
+    // Verificar si tiene contenido real (al menos 2 palabras diferentes de 3+ caracteres)
+    const realWords = words.filter(word => word.length >= 3 && /[aeiou]/i.test(word));
+    const hasRealContent = realWords.length >= 2 && uniqueWords.length >= 2;
+    
+    // Detectar solo números al inicio/final con poco texto
+    const numberTextPattern = /^\d+.{1,10}$|^.{1,10}\d+$/i.test(trimmedText) && trimmedText.length < 20;
+    
+    // Detectar secuencias de caracteres especiales como ////))))
+    const specialCharPattern = /[\/\)\(\!\?\.\,\;\:]{4,}/.test(trimmedText);
+    
+    return repeatedChars || 
+           nonsensePattern || 
+           numberLetterMix || 
+           repeatedWords || 
+           simpleRepeatedPattern || 
+           numberTextPattern || 
+           specialCharPattern ||
+           !hasRealContent;
+  };
+
+  const showWarningMessage = (message: string): void => {
+    setWarningMessage(message);
+    setShowWarning(true);
+    setTimeout(() => {
+      setShowWarning(false);
+    }, 4000);
+  };
+
   const handleComentarioChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const value = e.target.value;
-    if (value.length <= 500) {
-      setComentario(value);
+    let value = e.target.value;
+    
+    // Filtrar caracteres prohibidos en tiempo real
+    const forbiddenChars = /[#@$%^&*]/g;
+    if (forbiddenChars.test(value)) {
+      showWarningMessage("El comentario no debe contener estos caracteres: #,@,$,%,^,&,*");
+      // Remover los caracteres prohibidos
+      value = value.replace(forbiddenChars, '');
     }
+    
+    // Normalizar espacios múltiples a un solo espacio
+    value = normalizeSpaces(value);
+    
+    // Validar límite de caracteres BASADO EN TEXTO SIN ESPACIOS AL FINAL
+    const trimmedLength = value.trim().length;
+    if (trimmedLength > 500) {
+      showWarningMessage("Has excedido el límite máximo de 500 caracteres permitidos.");
+      return; // No actualizar el estado
+    }
+
+    setComentario(value);
+  };
+
+  const validateComment = (): { isValid: boolean; message?: string } => {
+    const trimmedComment = comentario.trim();
+
+    // Validar longitud mínima con texto real (sin espacios)
+    if (trimmedComment.length < 10) {
+      return { isValid: false, message: `Faltan ${10 - trimmedComment.length} caracteres` };
+    }
+
+    // Validar si es solo espacios en blanco
+    if (isOnlyWhitespace(comentario)) {
+      return { isValid: false, message: "El comentario no puede estar vacío" };
+    }
+
+    // Validar si es solo numérico
+    if (isOnlyNumeric(trimmedComment)) {
+      return { isValid: false, message: "No se permite comentarios numéricos" };
+    }
+
+    // Validar comentarios sin sentido
+    if (isNonsenseComment(trimmedComment)) {
+      return { isValid: false, message: "Escriba el comentario de forma clara" };
+    }
+
+    return { isValid: true };
+  };
+
+  // Función separada para validar comentarios sin sentido al enviar
+  const validateNonsenseOnSubmit = (): boolean => {
+    const validation = validateComment();
+    if (!validation.isValid && validation.message && 
+        (validation.message.includes("forma clara") || 
+         validation.message.includes("numéricos") || 
+         validation.message.includes("vacío"))) {
+      showWarningMessage(validation.message);
+      return false;
+    }
+    return true;
   };
 
   const enviarComentario = (): void => {
-    if (comentario.length >= 10 && rating > 0) {
+    const validation = validateComment();
+    
+    // Validar comentarios sin sentido solo al enviar
+    if (!validateNonsenseOnSubmit()) {
+      return;
+    }
+    
+    if (validation.isValid && rating > 0) {
+      const commentToSend = comentario.trim(); // Recortar espacios en blanco al final
       setComentarioEnviado(true);
-      console.log('Comentario enviado:', comentario);
+      console.log('Comentario enviado:', commentToSend);
       console.log('Calificación:', rating);
+      
+      // Aquí iría la llamada POST al backend
+      // await fetch('/api/comentarios', { method: 'POST', body: JSON.stringify({ comentario: commentToSend, rating }) });
       
       setTimeout(() => {
         onClose();
@@ -112,7 +257,8 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
     return stars;
   };
 
-  const canSubmit = rating > 0 && comentario.length >= 10;
+  const validation = validateComment();
+  const canSubmit = rating > 0 && validation.isValid;
 
   if (!isOpen || !inquilino) return null;
 
@@ -136,7 +282,6 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
                 alt={inquilino.nombre}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   const parent = target.parentElement;
@@ -159,7 +304,6 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
             <p className="text-sm text-gray-600">
               Fecha finalización: <span className="font-medium">18 mayo 2025</span>
             </p>
-            
 
             <div className="flex items-center space-x-2 mt-3">
               <div className="flex space-x-1">
@@ -183,9 +327,15 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
               Calificación enviada exitosamente
             </div>
           )}
+          
+          {/* Mensajes de advertencia */}
+          {showWarning && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm mb-2 text-center">
+              {warningMessage}
+            </div>
+          )}
         </div>
 
-        
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -200,10 +350,10 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
               disabled={comentarioEnviado}
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>
-                {comentario.length < 10 ? `Faltan ${10 - comentario.length} caracteres` : 'Mínimo alcanzado'}
+              <span className={validation.message && (validation.message.includes("forma clara") || validation.message.includes("numéricos") || validation.message.includes("vacío")) ? "text-red-600" : ""}>
+                {validation.message || (comentario.trim().length >= 10 ? 'Mínimo alcanzado' : `Faltan ${10 - comentario.trim().length} caracteres`)}
               </span>
-              <span>{comentario.length}/500</span>
+              <span>{comentario.trim().length}/500 caracteres</span>
             </div>
           </div>
 
@@ -219,12 +369,12 @@ const CalificarModal: React.FC<CalificarModalProps> = ({ isOpen, onClose, inquil
             )}
 
             {!canSubmit && !comentarioEnviado && (
-              <div className="text-sm text-gray-500">
-                {rating === 0 && comentario.length < 10 
+              <div className="text-sm text-red-600 text-center">
+                {rating === 0 && comentario.trim().length < 10 
                   ? "Selecciona una calificación y escribe un comentario para continuar"
                   : rating === 0 
                   ? "Selecciona una calificación para continuar"
-                  : "Completa el comentario para continuar"
+                  : validation.message || "Completa el comentario para continuar"
                 }
               </div>
             )}
