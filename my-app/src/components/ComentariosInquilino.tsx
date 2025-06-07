@@ -32,7 +32,7 @@ export default function ComentariosInquilino({ inquilino, onClose, perfilUrl }: 
       autor: "Jorge Suarez",
       texto: "Excelente inquilino. Puntual en la entrega, cuidadoso con el vehículo y muy respetuoso en la conversación. Sin duda, volvería a contactar uno de mis autos. 100% recomendado.",
       fecha: "1año/5/25",
-      avatar: "/avatars/jorge.png",
+      avatar: "https://media.istockphoto.com/id/1303206558/photo/headshot-portrait-of-smiling-businessman-talk-on-video-call.jpg?s=612x612&w=0&k=20&c=hMJhVHKeTIznZgOKhtlPQEdZqb0lJ5Nekz1A9f8sPV8=",
       calificacion: 5
     },
     {
@@ -40,7 +40,7 @@ export default function ComentariosInquilino({ inquilino, onClose, perfilUrl }: 
       autor: "Miguel Duran",
       texto: "En general, la experiencia fue buena. El inquilino fue amable y comunicativo durante todo el proceso, y devolvió el auto sin daños. Sin embargo, hubo un pequeño retraso en la devolución del vehículo sin previo aviso, lo cual generó un poco de incertidumbre. Aun así, el coche fue devuelto en buenas condiciones y el inquilino se mostró dispuesto a mejorar para futuras transacciones. Lo recomendaría, aunque con una sugerencia de mejorar la puntualidad.",
       fecha: "9/06/25",
-      avatar: "/avatars/miguel.png",
+      avatar: "https://media.istockphoto.com/id/1285124274/es/foto/retrato-de-hombre-de-mediana-edad.jpg?s=612x612&w=0&k=20&c=j3byP57bGnLFPhEwoJNjwnQVL58RRpmYfLT5k_O9nKE=",
       calificacion: 4
     },
     {
@@ -48,7 +48,7 @@ export default function ComentariosInquilino({ inquilino, onClose, perfilUrl }: 
       autor: "Samuel Lopez",
       texto: "Todo perfecto. Responsable, puntual y muy cuidadoso con el auto. ¡Gracias!",
       fecha: "12/04/25",
-      avatar: "/avatars/samuel.png",
+      avatar: "https://media.istockphoto.com/id/1030912828/photo/outdoor-head-and-shoulders-portrait-of-smiling-man-in-park.jpg?s=612x612&w=0&k=20&c=E5sL5mq_PGOAR-xaj2v_iGGyUEWa1MnNG3qH3TYlQ0A=",
       calificacion: 5
     }
   ];
@@ -88,16 +88,16 @@ export default function ComentariosInquilino({ inquilino, onClose, perfilUrl }: 
                   alt={inquilino.nombre} 
                   width={50} 
                   height={50} 
-                  className="rounded-full object-cover hover:opacity-80 transition-opacity"
+                  className="rounded-full aspect-square object-cover hover:opacity-80 transition-opacity aspect-square"
                 />
               </a>
             ) : (
               <Image 
                 src={inquilino.img} 
                 alt={inquilino.nombre} 
-                width={50} 
-                height={50} 
-                className="rounded-full object-cover"
+                width={60} 
+                height={60} 
+                className="rounded-full object-cover aspect-square"
               />
             )}
             <div>
@@ -126,7 +126,7 @@ export default function ComentariosInquilino({ inquilino, onClose, perfilUrl }: 
                       alt={coment.autor} 
                       width={40} 
                       height={40} 
-                      className="rounded-full object-cover flex-shrink-0"
+                      className="rounded-full object-cover aspect-square"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">

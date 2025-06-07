@@ -20,7 +20,7 @@ const inquilinos = [
   {
     id: 1,
     nombre: "Mariza Ramirez",
-    img: "/calendar.png",
+    img: "https://media.istockphoto.com/id/1305462732/photo/headshot-studio-portrait-of-a-woman-in-profile-looking-at-the-camera.jpg?s=612x612&w=0&k=20&c=T0R-pAmJJpErWc8hE0jSJnmptUFQ5MvtPX7NPJJln9s=",
     totalReseñas: 3,
     promedio: 4.9,
   },
@@ -115,7 +115,7 @@ export default function CalificarInquilino() {
 
   return (
     <div className="w-full max-w-[92rem] mx-auto px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer ">
         {inquilinos.map((inq) => {
           const fullStars = Math.floor(inq.promedio);
           const partialFill = (inq.promedio - fullStars) * 100;
@@ -123,7 +123,7 @@ export default function CalificarInquilino() {
           return (
             <div
               key={inq.id}
-              className="border-2 border-orange-400 rounded-2xl p-3 shadow-lg flex gap-4 items-center bg-white overflow-hidden"
+              className="border-2 border-orange-400 rounded-2xl p-3 shadow-lg flex gap-4 items-center bg-white overflow-hidden shadow-sm hover:shadow-md transform hover:scale-101 transition-all duration-300"
             >
               {/* Izquierda: Foto + nombre */}
               <div className="flex flex-col items-center w-32 min-w-0">
@@ -132,7 +132,7 @@ export default function CalificarInquilino() {
                   alt={inq.nombre}
                   width={150}
                   height={150}
-                  className="rounded-full object-cover"
+                  className="rounded-full object-cover aspect-square"
                 />
                 <h3 className="mt-3 font-semibold text-center text-sm sm:text-base">
                   {inq.nombre}
@@ -159,7 +159,7 @@ export default function CalificarInquilino() {
                   <button
                    onClick={() => abrirComentariosModal(inq)} 
 
-                   className="bg-blue-500 hover:bg-blue-600 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm">
+                   className="bg-blue-500 hover:bg-blue-600 transition text-white px-2 py-0.5 rounded text-xs sm:text-sm cursor-pointer">
                     VER
                   </button>
                   <button 
