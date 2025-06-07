@@ -21,8 +21,9 @@ export default function CarModal({ car, onClose }: CarModalProps) {
         {/* Botón cerrar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-600 hover:text-black z-10"
-        >
+className="absolute top-4 right-4 text-black-600 hover:text-red-700 hover:scale-130 transition-transform duration-200 z-10 cursor-pointer"
+
+>
           <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
