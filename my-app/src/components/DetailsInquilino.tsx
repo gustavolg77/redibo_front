@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import { FiAlertTriangle, FiMail, FiPhone, FiClock } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
+import { apiFetch } from "../utils/api";
 
 interface Rental {
   id: number;
@@ -51,12 +51,7 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
           }
         }
 
-        const response = await fetch(`http://localhost:5000/api/inquilinos/${tenantId}/summary`);
-        if (!response.ok) {
-          throw new Error('No se pudo obtener los datos del inquilino');
-        }
-        const data = await response.json();
-
+        const data = await apiFetch(`/api/inquilinos/${tenantId}/summary`);
         const completeData = {
           ...data,
           phone: data.phone || data.telefono || 'No disponible',
@@ -105,15 +100,13 @@ const DetailsInquilino = ({ tenantId, inquilinosData, onClose}: DetailsInquilino
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/validate-whatsapp', {
+      const data = await apiFetch('/api/validate-whatsapp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ phone: inquilino.phone }),
       });
-
-      const data = await response.json();
 
       if (data.valid) {
         const whatsappUrl = `https://wa.me/${inquilino.phone.replace(/[^\d]/g, '')}`;
