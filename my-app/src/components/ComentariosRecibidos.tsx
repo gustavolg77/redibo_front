@@ -41,36 +41,24 @@ export default function ComentariosRecibidos() {
   useEffect(() => {
     localStorage.setItem(variableDeDireccion, direction);
   }, [direction]);
-
-    useEffect(() => {
-        const fetchRatings = async () => {
-            try {
-                const res = await fetch('http://localhost:5000/api/ratings');
-                if (!res.ok) throw new Error('Error al obtener calificaciones');
-                const data: Rating[] = await res.json();
-
-                const ratingsWithCars: RatingWithCar[] = await Promise.all(
-                    data.map(async (rating) => {
-                        const carRes = await fetch(`http://localhost:5000/api/cars/${rating.idCar}`);
-                        if (!carRes.ok) throw new Error('Error al obtener auto');
-                        const car: Car = await carRes.json();
-
-                        return {
-                            ...rating,
-                            car,
-                        };
-                    })
-                );
-
-                setRatings(ratingsWithCars);
-            } catch (error) {
-                console.error('Error al cargar los comentarios:', error);
-            }
-        };
-
-        fetchRatings();
-    }, []);
-
+ useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/cars/comments?hostId=${hostId}&sortBy=${sortBy}&direction=${direction}`
+        );
+        if (!res.ok) throw new Error('Error al obtener datos');
+        const data: CommentedCar[] = await res.json();
+        setItems(data);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [hostId, sortBy, direction]);
   // Ordenar items localmente
   const sortedItems = [...items].sort((a, b) => {
     const dir = direction === 'asc' ? 1 : -1;
@@ -162,20 +150,19 @@ export default function ComentariosRecibidos() {
                   <p>{item.comentarios}</p>
                 </div>
 
-                            {/* Calificación */}
-                            <div className="col-span-3 sm:col-span-2 flex flex-col items-center justify-start">
-                                <strong className="text-gray-600 mb-10">Calificación</strong>
-                                <p className="flex justify-center gap-1">
-                                    {[...Array(5)].map((_, i) => (
-                                        <FaStar
-                                            key={i}
-                                            color={i < ratingNumber ? '#FBBF24' /* amarillo */ : '#D1D5DB' /* gris */}
-                                            size={20}
-                                            aria-label={i < ratingNumber ? 'Estrella llena' : 'Estrella vacía'}
-                                        />
-                                    ))}
-                                </p>
-                            </div>
+                <div className="col-span-3 sm:col-span-2 flex flex-col items-center justify-start">
+                  <strong className="text-gray-600 mb-10">Calificación</strong>
+                  <p className="flex justify-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar
+                        key={i}
+                        color={i < ratingStars ? '#FBBF24' : '#D1D5DB'}
+                        size={20}
+                        aria-label={i < ratingStars ? 'Estrella llena' : 'Estrella vacía'}
+                      />
+                    ))}
+                  </p>
+                </div>
 
                 <div className="col-span-3 sm:col-span-1 flex flex-col items-center justify-start">
                   <strong className="text-gray-600 mb-10">Fecha</strong>
